@@ -17,17 +17,24 @@ class cNetWorkManager():
     __ssid = ''
     __passwd = ''
 
-    ServerSocket = None
-    ClientSocket = None
+    __ServerSocket : socket.socket  = socket.socket()
+    __ServerAddr = None
+
+    __ClientSocket  : socket.socket = socket.socket()
+    __ClientAddr = None
 
     __host = "127.0.0.1" #loopback
     __port = 7777
 
-    def __init__(self,Hssid = 'rpi42'):
+    __maxBuf = 512
+
+    def __init__(self,Hssid = 'rpi42', maxBuf = 512):
         self.__Hssid = Hssid
+        self.__maxBuf = maxBuf
+        self.__ServerAddr = (self.__host,self.__port)
         return
     def __del__(self):
-        self.SocketClose()
+        self.Close()
         return
 
     def TurnOnHotSpot(self):
@@ -35,7 +42,6 @@ class cNetWorkManager():
         time.sleep(2)
 
     def SetGeneralWiFi(self,ssid : str, passwd : str) -> bool :
-
         self.__ssid = ssid
         self.__passwd = passwd
 
@@ -51,17 +57,42 @@ class cNetWorkManager():
         return True
 
     def SetTCPServerSocket(self):
-        self.ServerSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.ServerSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.ServerSocket.bind(self.__host,self.__port)
+        self.__ServerSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.__ServerSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.__ServerSocket.bind(self.__ServerAddr)
 
-    def SocketClose(self):
-        self.ServerSocket.close()
-        self.ClientSocket.close()
+    def GetCurrentClient(self) -> str:
+        return self.__ClientAddr
+
+    def Listen(self):
+        self.__ServerSocket.listen()
+
+    def Accept(self): 
+        self.__ClientSocket, self.__ClientAddr = self.__ServerSocket.accept()
+
+    def Recv(self) -> str :
+        buf =  self.__ClientSocket.recv(self.__maxBuf)
+        return buf
+    
+    def SendAll(self, buf : str):
+        self.__ServerSocket.sendall(buf)
+
+    def Close(self):
+        self.__ServerSocket.close()
+        self.__ClientSocket.close()
 
 
 
+if __name__ == '__main__':
+        network =  cNetWorkManager()
 
+        network.SetTCPServerSocket()
+        network.Listen()
+        network.Accept()
+        buf = network.Recv()
+        print(buf)
+
+        network.Close()
 
 
 

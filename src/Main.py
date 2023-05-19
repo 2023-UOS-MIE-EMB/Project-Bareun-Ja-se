@@ -1,7 +1,7 @@
 ﻿from multiprocessing import Process, Value, Array,Queue, Manager
 import time, os
 from myQueue import cQueue
-from PacketUtil import cPacketManager
+from PacketManager import cPacketManager
 import MotorManager as Motor
 import DetectingSleep as Detection
 from NetWorkManager import cNetWorkManager
@@ -24,7 +24,7 @@ gBaseStreamAddr = "UnvaluableAddr"
 gStreamingAddr.put(gBaseStreamAddr)             #base value
 
 gPacketManager  = cPacketManager()
-gNetWorkManager = cNetWorkManager()
+gNetWorkManager = cNetWorkManager(Hssid="rpi42",maxBuf=512)
 
 
 '''
@@ -44,8 +44,8 @@ def ReapingResources():
         gpDetection.terminate() 
         time.sleep(2) #neccessary, waiting Process died
      
-    gNetWorkManager.ClientSocket.close()
-    gNetWorkManager.ServerSocket.close()
+    gNetWorkManager.__ClientSocket.close()
+    gNetWorkManager.__ServerSocket.close()
 
     return
 
@@ -56,31 +56,33 @@ def ShutingDown():
     ReapingResources()
     os.system("shutdown now")
 
-
 if __name__ == '__main__':
 
 #Prior-Connect via HotSpot
 
-    gNetWorkManager.TurnOnHotSpot()
+    # gNetWorkManager.TurnOnHotSpot()
+    # gNetWorkManager.SetTCPServerSocket()
+
+    # gNetWorkManager.Listen()
+    # gNetWorkManager.Accept()
+    # wifiPacket = gNetWorkManager.Recv()
+    # WifiDict =  gPacketManager.ParsingPacket(wifiPacket)
+    # gNetWorkManager.Close()
+
+    # gNetWorkManager.SetGeneralWiFi(WifiDict["8"],WifiDict["9"])
+    # gNetWorkManager.SetTCPServerSocket()
+    # gNetWorkManager.Listen()
+    # gNetWorkManager.Accept()
+
+    #<\Test>
     gNetWorkManager.SetTCPServerSocket()
-    gNetWorkManager.ServerSocket.listen()
-
-    gNetWorkManager.ClientSocket, clientAddr = gNetWorkManager.ServerSocket.accept()
-
-    wifiPacket = gNetWorkManager.ClientSocket.recv(gMAXBUF)
-    WifiDict =  gPacketManager.ParsingPacket(wifiPacket)
-    gNetWorkManager.SocketClose()
-
-    gNetWorkManager.SetGeneralWiFi(WifiDict["8"],WifiDict["9"])
-    gNetWorkManager.SetTCPServerSocket()
-    gNetWorkManager.ServerSocket.listen()
-
-    gNetWorkManager.ClientSocket, clientAddr = gNetWorkManager.ServerSocket.accept()
+    gNetWorkManager.Listen()
+    gNetWorkManager.Accept()
 
     #Recv and Send
     while(1): 
 
-        recvedPacket = gNetWorkManager.ClientSocket.recv(gMAXBUF)
+        recvedPacket = gNetWorkManager.Recv()
 
         #for test
         #sendingContent = { "1" : "10", "2" : "3" }
@@ -98,10 +100,13 @@ if __name__ == '__main__':
         #print("Mode is : ", alarmMode)
         #isShutdown = False
 
-        targetStage = packetResults["0"]
-        alarmTime = packetResults["3"]
-        alarmMode = packetResults["4"]
-        isShutdown = packetResults["2"]
+        targetStage = int(packetResults["0"])
+        alarmTime = int(packetResults["3"])
+        alarmMode = int(packetResults["4"])
+        isShutdown = int(packetResults["2"])
+        
+        for key,value in packetResults.items():
+            print(key,":", value)
 
     #power controll
         if(isShutdown):
@@ -136,21 +141,19 @@ if __name__ == '__main__':
             NowStreamingAddr = gStreamingAddr.get()
         else : 
             NowStreamingAddr = gBaseStreamAddr
-
-            sendingData = {"5" : NowStreamingAddr}
-
+            
+        sendingData = {"5" : NowStreamingAddr}
         result , packet = gPacketManager.MakingPacketToSend(sendingData)
 
         if(result == False) : 
             print("StreamingError!")
             exit()
 
-        #todo: send Packet
-        print(packet)
+        #send Packet
+        #gNetWorkManager.SendAll(packet)
+        print("senddata: " ,packet)
 
         time.sleep(1)
-
-    print( "Main : " , gcMotorRequestQ)
 
  
 

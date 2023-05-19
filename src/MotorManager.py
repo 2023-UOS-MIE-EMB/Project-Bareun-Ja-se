@@ -22,7 +22,7 @@ class __cMotorManager() :
     __rpmSleep = 0.005
     __cycle = 6400
 
-    def __int__(self,rpmSleep:float = 0.005 , cycle:int = 6400):
+    def __init__(self,rpmSleep:float = 0.005 , cycle:int = 6400):
         GPIO.setmode(GPIO.BCM)
         GPIO.setwarnings (False)
         

@@ -92,7 +92,6 @@ class cPacketManager:
         except ValueError: #parsing fail
             return None
 
-
   
 '''test code '''
 
