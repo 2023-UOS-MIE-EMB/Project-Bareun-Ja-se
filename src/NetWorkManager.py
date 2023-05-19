@@ -51,10 +51,10 @@ class cNetWorkManager():
         logFile =  open('./log.txt',"r")
         lines =  logFile.readlines()
 
-        if(lines.find("error")):  #need to check log file..
-           return False
+        if(lines.find("successfully")):  #need to check log file..
+           return True
 
-        return True
+        return False
 
     def SetTCPServerSocket(self):
         self.__ServerSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

@@ -68,7 +68,6 @@ class cPacketManager:
 
         # 2. size이용해서 Tail Header검사
         bdlen = firstLine[firstLine.find(':')+1:]
-        print("bdsize : ",bdlen)
         bodySize = int(bdlen)
         body = buf.read(bodySize)
         
