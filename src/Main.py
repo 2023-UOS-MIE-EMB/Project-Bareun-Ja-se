@@ -77,11 +77,11 @@ if __name__ == '__main__':
     #<\Test>
     gNetWorkManager.SetTCPServerSocket()
     gNetWorkManager.Listen()
-    gNetWorkManager.Accept()
+    
 
     #Recv and Send
     while(1): 
-
+        gNetWorkManager.Accept()
         recvedPacket = gNetWorkManager.Recv()
 
         #for test

@@ -15,7 +15,7 @@ class cPacketManager:
         패킷을 형식에 따라 Header, Body로 나눈다. 패킷의 유효성 검사도 동시에 진행
     @ret
         -dict : 파싱이 결과가 담김. 문제가 있었다면 None '''
-    def ParsingPacket(self,packet : str ) -> dict :  
+    def ParsingPacket(self,packet : bytes ) -> dict :  
         headerSize, packetBody = self.__CheckingHeader(packet)
         parsingResult = None
 
@@ -67,11 +67,13 @@ class cPacketManager:
         firstLine = firstLine.replace('\r\n','')
 
         # 2. size이용해서 Tail Header검사
-        bodySize = int(firstLine[firstLine.find(':')+1:])
-        
+        bdlen = firstLine[firstLine.find(':')+1:]
+        print("bdsize : ",bdlen)
+        bodySize = int(bdlen)
         body = buf.read(bodySize)
         
         endLine = buf.readline()
+        buf.close()
         if(endLine == "\r\n"):
                 return (headerSize , body)
         else :
@@ -98,8 +100,9 @@ class cPacketManager:
 if __name__ == '__main__':
     packetManager = cPacketManager()
 
-    sendingContent = { "1" : "10", "2" : "3" }
-    result, packet = packetManager.MakingPacketToSend(sendingContent)
-    print(packet)
-    print("---------")
-    print(packetManager.ParsingPacket(packet))
+    for i in range(10):
+        sendingContent = { "1" : "10", "2" : "3" }
+        result, packet = packetManager.MakingPacketToSend(sendingContent)
+        print(packet)
+        print("---------")
+        print(packetManager.ParsingPacket(packet))

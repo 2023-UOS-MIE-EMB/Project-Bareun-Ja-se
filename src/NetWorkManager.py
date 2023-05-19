@@ -70,7 +70,7 @@ class cNetWorkManager():
     def Accept(self): 
         self.__ClientSocket, self.__ClientAddr = self.__ServerSocket.accept()
 
-    def Recv(self) -> str :
+    def Recv(self) -> bytes :
         buf =  self.__ClientSocket.recv(self.__maxBuf)
         return buf
     
