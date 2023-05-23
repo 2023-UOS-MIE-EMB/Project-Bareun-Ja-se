@@ -10,35 +10,33 @@ import random
 #global_motor
 gpMotor = Process()
 gcMotorRequestQ = cQueue()      
-gCurrentAngle = Value('i',0)    #base value,
-gMotorWorking = Value('i',0)    #base value,
+gCurrentAngle = Value('i',0)                    #base value,
 
 #global_detection
 gpDetection = Process()
-gDetectionWorking = Value('i',0)    #base value,
-gStreamingAddr = Queue(1)           
-gStreamingAddr.put("https://127.0.0.1:5000")          #base value
+gStreamingAddr = Queue(1) 
+gBaseStreamAddr = "UnvaluableAddr"
+gLatestStreamAddr = ""
+gStreamingAddr.put(gBaseStreamAddr)    #base value
 
 
 if __name__ == '__main__':
     
-
-
-    #ecv and Send
+    #Recv and Send
     while(1): 
         recvedPacket = "recved msg from client"
         packetManager = cPacketController()
    
         if(packetManager.ParsingPacket(recvedPacket) == False):
-            exit()
+            continue  #return to recv
 
         packetResults = packetManager.GetBody()
 
-        #(dict)packetResults ���� �̾Ƴ� �����ȣ��� ����.
+        #Data from (dict)packetResults  
         targetAngle = 10
-        isStreaming = False
         alarmTime = 5
-        alarmMode = 0 << 1 
+        alarmMode = random.randint(0,1)
+        print("Mode is : ", alarmMode)
         isShutdown = False
 
     #power controll
@@ -50,29 +48,46 @@ if __name__ == '__main__':
             exit()
 
     #motor
-
-        if not ( targetAngle == -1) : 
-            gcMotorRequestQ.Push(targetAngle)
+        #if not ( targetAngle == -1) : 
+        #    gcMotorRequestQ.Push(targetAngle)
             
-            #</Testing
-            for i in range(20):
-                gcMotorRequestQ.Push(i)
-               #gcMotorRequestQ.Push(random.randint(5,30))
-            #/>
-            if( bool(gMotorWorking.value)  == False) : 
-                gpMotor = Process(target=Motor.CallingMotor, args=( gcMotorRequestQ,gCurrentAngle, gMotorWorking))
-                gcMotorRequestQ = cQueue() #reset
-                gpMotor.start()
+        #    #</Testing
+        #    for i in range(20):
+        #        gcMotorRequestQ.Push(i)
+        #       #gcMotorRequestQ.Push(random.randint(5,30))
+        #    #/>
+        #    if( gpMotor.is_alive()  == False) : 
+        #        gpMotor = Process(target=Motor.CallingMotor, args=( gcMotorRequestQ,gCurrentAngle))
+        #        gcMotorRequestQ = cQueue() #reset
+        #        gpMotor.start()
 
     #detectomg sleep
-        
         if not (alarmMode == 0) :  #need detection
-            if( gDetectionWorking.value  == False ) : #but detection doesn't work, turn on detection process
-                pDetection = Process(target=Detection.Detection(), args=(alarmTime, alarmMode, gStreamingAddr))
+            if(gpDetection.is_alive()  == False ) : #but detection doesn't work, turn on detection process
+                gpDetection = Process(target=Detection.Detection, args=(alarmTime, alarmMode, gStreamingAddr))
+                gpDetection.start()
 
         else :
-            if( gDetectionWorking.value  == True ) : #but detection is working now, turn off detection process
-                print(1)
+            if( gpDetection.is_alive()  == True ) : #but detection is working now, turn off detection process
+                gpDetection.terminate()
+                time.sleep(1)
+        
+        NowStreamingAddr = gStreamingAddr.get(block=False, timeout =1)
+        
+        if( NowStreamingAddr != None) : 
+            gLatestStreamAddr = NowStreamingAddr
+
+        result , packet = packetManager.MakingPacketToSendClient(gLatestStreamAddr)
+
+        if(result == False) : 
+            print("StreamingError!")
+            exit()
+
+        #todo: send Packet
+        print(packet)
+        
+        
+
 
         
 
