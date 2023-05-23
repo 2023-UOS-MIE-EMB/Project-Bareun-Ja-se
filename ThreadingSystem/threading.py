@@ -23,7 +23,7 @@ if __name__ == '__main__':
 
         packetResults = packetManager.GetBody()
 
-        #(dict)packetResults ©║╪╜ ╩л╬фЁ╫ а╕╬Н╫ехё╤С╟М ╟║а╓.
+        #(dict)packetResults О©╫О©╫О©╫О©╫ О©╫л╬фЁО©╫ О©╫О©╫О©╫О©╫О©╫хёО©╫О©╫О©╫ О©╫О©╫О©╫О©╫.
         targetAngle = 10
         isStreaming = False
         alarmTime = 5
