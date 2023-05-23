@@ -53,6 +53,13 @@ if __name__ == '__main__':
                 gcMotorRequestQ = cQueue() #reset
                 pMotor.start()
 
+    #recognize
+        
+
+    #streaming
+
+
+
         time.sleep(1)
 
 
