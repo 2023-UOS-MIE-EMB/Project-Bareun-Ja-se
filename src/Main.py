@@ -16,8 +16,8 @@ gCurrentAngle = Value('i',0)                    #base value,
 gpDetection = Process()
 gStreamingAddr = Queue(1) 
 gBaseStreamAddr = "UnvaluableAddr"
-gLatestStreamAddr = ""
-gStreamingAddr.put(gBaseStreamAddr)    #base value
+#gLatestStreamAddr = ""
+gStreamingAddr.put(gBaseStreamAddr)             #base value
 
 
 if __name__ == '__main__':
@@ -69,15 +69,15 @@ if __name__ == '__main__':
 
         else :
             if( gpDetection.is_alive()  == True ) : #but detection is working now, turn off detection process
-                gpDetection.terminate()
-                time.sleep(1)
+                gpDetection.terminate() 
+                time.sleep(1) #neccessary, waiting Process died
         
-        NowStreamingAddr = gStreamingAddr.get(block=False, timeout =1)
-        
-        if( NowStreamingAddr != None) : 
-            gLatestStreamAddr = NowStreamingAddr
+        if( gpDetection.is_alive()  == True ):
+            NowStreamingAddr = gStreamingAddr.get()
+        else : 
+            NowStreamingAddr = gBaseStreamAddr
 
-        result , packet = packetManager.MakingPacketToSendClient(gLatestStreamAddr)
+        result , packet = packetManager.MakingPacketToSendClient(NowStreamingAddr)
 
         if(result == False) : 
             print("StreamingError!")
@@ -85,15 +85,6 @@ if __name__ == '__main__':
 
         #todo: send Packet
         print(packet)
-        
-        
-
-
-        
-
-    #streaming
-
-
 
         time.sleep(1)
 
