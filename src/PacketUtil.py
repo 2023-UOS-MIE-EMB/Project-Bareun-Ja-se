@@ -1,3 +1,4 @@
+from typing import TypeVar, Tuple, List
 
 class cPacketController:
     __body : dict = None
@@ -13,6 +14,11 @@ class cPacketController:
             return False
 
         return True
+
+
+    #todo : making Packet with streaming addr
+    def MakingPacketToSendClient(self, streamingAddr : str) -> Tuple[bool, str] :
+        return True , streamingAddr
 
     def GetBody(self) -> dict :
         return self.__body

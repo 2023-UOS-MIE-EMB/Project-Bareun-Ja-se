@@ -3,16 +3,27 @@ import time, os
 from cQueue import cQueue
 from PacketUtil import cPacketController
 import MotorUtils as Motor
+import DetectingSleep as Detection
 import random
 
 
 #global_motor
-gcMotorRequestQ = cQueue() #local Q
-gCurrentAngle = Value('i',0) #base value,
-gMotorWorking = Value('i',0) #base value,
+gpMotor = Process()
+gcMotorRequestQ = cQueue()      
+gCurrentAngle = Value('i',0)    #base value,
+gMotorWorking = Value('i',0)    #base value,
+
+#global_detection
+gpDetection = Process()
+gDetectionWorking = Value('i',0)    #base value,
+gStreamingAddr = Queue(1)           
+gStreamingAddr.put("https://127.0.0.1:5000")          #base value
+
 
 if __name__ == '__main__':
     
+
+
     #ecv and Send
     while(1): 
         recvedPacket = "recved msg from client"
@@ -49,11 +60,20 @@ if __name__ == '__main__':
                #gcMotorRequestQ.Push(random.randint(5,30))
             #/>
             if( bool(gMotorWorking.value)  == False) : 
-                pMotor = Process(target=Motor.CallingMotor, args=( gcMotorRequestQ,gCurrentAngle, gMotorWorking))
+                gpMotor = Process(target=Motor.CallingMotor, args=( gcMotorRequestQ,gCurrentAngle, gMotorWorking))
                 gcMotorRequestQ = cQueue() #reset
-                pMotor.start()
+                gpMotor.start()
 
-    #recognize
+    #detectomg sleep
+        
+        if not (alarmMode == 0) :  #need detection
+            if( gDetectionWorking.value  == False ) : #but detection doesn't work, turn on detection process
+                pDetection = Process(target=Detection.Detection(), args=(alarmTime, alarmMode, gStreamingAddr))
+
+        else :
+            if( gDetectionWorking.value  == True ) : #but detection is working now, turn off detection process
+                print(1)
+
         
 
     #streaming

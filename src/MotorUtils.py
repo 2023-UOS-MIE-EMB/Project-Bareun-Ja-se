@@ -20,6 +20,7 @@ def CallingMotor(requestQ : cQueue , currentAngle : Value , isWorking : Value):
         #todo :  
         #   -call motor controller(can not use function)
         #   -Update current Value.(can not use function)
+        #   내부에서는 임시변수로 current관리하다가 마지막에만 업데이트?
     isWorking = False
     print("ChildDead")
     return
