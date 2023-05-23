@@ -1,30 +1,64 @@
 from multiprocessing import Process, Value, Array,Queue, Manager
-import time
-import cQueue
+import time, os
+from cQueue import cQueue
+from PacketUtil import cPacketController
+import MotorUtils as Motor
+import random
 
-def pushing(q, item):
-    
-    while(1):
-        q.Push(item)
-        time.sleep(1)
 
-def Poping(q : cQueue):
-    while(1):
-        while not (q.Empty()):
-            print(q.Pop())
-        time.sleep(5)
+#global_motor
+gcMotorRequestQ = cQueue() #local Q
+gCurrentAngle = Value('i',0) #base value,
+gMotorWorking = Value('i',0) #base value,
 
 if __name__ == '__main__':
+    
+    #ecv and Send
+    while(1): 
+        recvedPacket = "recved msg from client"
+        packetManager = cPacketController()
+   
+        if(packetManager.ParsingPacket(recvedPacket) == False):
+            exit()
 
-    q = cQueue()
-  
-    p1 = Process(target=pushing, args=( q, 1))
-    p2 = Process(target=Poping, args=( q,))
-    p1.start()
-    p2.start()
+        packetResults = packetManager.GetBody()
 
-    time.sleep(10)
+        #(dict)packetResults 에서 뽑아낸 제어신호라고 가정.
+        targetAngle = 10
+        isStreaming = False
+        alarmTime = 5
+        alarmMode = 0 << 1 
+        isShutdown = False
 
-    p1.terminate()
-    p2.terminate()
+    #power controll
+        if(isShutdown):
+            #todo:
+            #   -set device initial pose via motor
+            #   -resources reaping 
+            #   os("shutdown now")
+            exit()
+
+    #motor
+
+        if not ( targetAngle == -1) : 
+            gcMotorRequestQ.Push(targetAngle)
+            
+            #</Testing
+            for i in range(20):
+                gcMotorRequestQ.Push(i)
+               #gcMotorRequestQ.Push(random.randint(5,30))
+            #/>
+            if( bool(gMotorWorking.value)  == False) : 
+                pMotor = Process(target=Motor.CallingMotor, args=( gcMotorRequestQ,gCurrentAngle, gMotorWorking))
+                gcMotorRequestQ = cQueue() #reset
+                pMotor.start()
+
+        time.sleep(1)
+
+
+     
+    print( "Main : " , gcMotorRequestQ)
+
+ 
+
  

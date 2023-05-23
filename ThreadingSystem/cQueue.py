@@ -1,24 +1,30 @@
-from multiprocessing import Manager
-class cQueue():
-    __manager = Manager()
+from multiprocessing import Process, Manager
+import time
+
+class cQueue:
+    __queue = None
+
     def __init__(self):
-        self.queue = self.__manager.list([])
+        self.__queue = []
 
     def Push(self, data):
-        self.queue.append(data)
+        self.__queue.append(data)
         
     def Pop(self):
         object_pop = None
-        if not( self.isEmpty()):
-            object_pop = self.queue[0]
-            self.queue = self.queue[1:]
+        if not( self.IsEmpty()):
+            object_pop = self.__queue[0]
+            self.__queue = self.__queue[1:]
         return object_pop
             
     def peek(self):
         object_peek = None
-        if not( self.isEmpty()):
-            object_peek = self.queue[0]
+        if not( self.IsEmpty()):
+            object_peek = self.__queue[0]
         return object_peek
+
+    def Size(self) -> int : 
+        return len(self.__queue)
             
-    def isEmpty(self):
-        return len(self.queue) == 0
+    def IsEmpty(self):
+        return self.Size() == 0
