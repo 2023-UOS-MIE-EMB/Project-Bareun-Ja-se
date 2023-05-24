@@ -1,19 +1,6 @@
 ﻿from typing import TypeVar, Tuple, List
 import json, io
-
-
-def ConcatStr( src : str , dst : any, seperator :  str = '') -> str :
-    ret = []
-    ret.append(src)
-
-    if (type(dst) is Tuple) :
-        for i in dst : 
-            ret.append(str(i))
-    else :
-        ret.append(str(dst))
-
-    ret = seperator.join(ret)
-    return ret
+from  utils import ConcatStr
 
 '''
 @기능
@@ -58,7 +45,9 @@ class cPacketManager:
         
         packetHeader = ConcatStr("H:",bodySize) #header
 
-        packetList.append("\r\n") #tail headeer
+        packetList.append(packetHeader)
+        packetList.append(packetBody)
+        packetList.append("\r\n") #tail header
 
         dataToSend = ConcatStr('',packetList, "\r\n")
 
@@ -110,4 +99,4 @@ if __name__ == '__main__':
     sendingContent = { "1" : "10", "2" : "3" }
     rsult, packetBody = packetManager.MakingPacketToSend(sendingContent)
     print(packetBody)
-
+    print("end")
