@@ -15,14 +15,12 @@ class cPacketManager:
         패킷을 형식에 따라 Header, Body로 나눈다. 패킷의 유효성 검사도 동시에 진행
     @ret
         -dict : 파싱이 결과가 담김. 문제가 있었다면 None '''
-    def ParsingPacket(self,packet : str ) -> dict : 
-        headerSize = self.__CheckingHeader(packet)
+    def ParsingPacket(self,packet : str ) -> dict :  
+        headerSize, packetBody = self.__CheckingHeader(packet)
         parsingResult = None
 
         if (headerSize == -1): 
             return parsingResult
-
-        packetBody = packet[ headerSize : -4 ] #\r\n\r\n =  4 bytes 
 
         parsingResult =  self.__JsonsToDict(packetBody)
         return parsingResult
@@ -43,13 +41,12 @@ class cPacketManager:
 
         bodySize = len(packetBody)
         
-        packetHeader = ConcatStr("H:",bodySize) #header
+        packetHeader = ConcatStr("H:",bodySize) #header(src)
 
-        packetList.append(packetHeader)
-        packetList.append(packetBody)
-        packetList.append("\r\n") #tail header
+        packetList.append(packetBody) #append body
+        packetList.append("\r\n") #append tail header
 
-        dataToSend = ConcatStr('',packetList, "\r\n")
+        dataToSend = ConcatStr(packetHeader,packetList, "\r\n")
 
         return True , dataToSend
     
@@ -60,16 +57,24 @@ class cPacketManager:
         -packet : whole packet
     @ret
         int :  header size, if packet is abnormal, returns -1'''
-    def __CheckingHeader(self, packet : str) -> int :
-        headerSize = -1
+    def __CheckingHeader(self, packet : str) -> Tuple[int,str] :
+        
         # 1. 첫줄 -> H, bodySize 확인
         buf = io.StringIO(packet)
         firstLine = buf.readline()
+        headerSize = len(firstLine)
+        firstLine = firstLine.replace('\r\n','')
 
         # 2. size이용해서 Tail Header검사
-
-        return headerSize
-    
+        bodySize = int(firstLine[firstLine.find(':')+1:])
+        
+        body = buf.read(bodySize)
+        
+        endLine = buf.readline()
+        if(endLine == "\r\n"):
+                return (headerSize , body)
+        else :
+            return (-1 ,None)
     '''
     @기능
         json형식의 str을 dict로 변환하여 리턴
@@ -97,6 +102,7 @@ if __name__ == '__main__':
     packetManager = cPacketManager()
 
     sendingContent = { "1" : "10", "2" : "3" }
-    rsult, packetBody = packetManager.MakingPacketToSend(sendingContent)
-    print(packetBody)
-    print("end")
+    rsult, packet = packetManager.MakingPacketToSend(sendingContent)
+    print(packet)
+    print("---------")
+    print(packetManager.ParsingPacket(packet))

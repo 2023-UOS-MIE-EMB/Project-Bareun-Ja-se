@@ -16,5 +16,5 @@ def ConcatStr( src : str , dst : any, seperator :  str = '') -> str :
     else :
         ret.append(str(dst))
 
-    ret = seperator.join(ret)
+    ret = seperator.join(ret[:])
     return ret
