@@ -1,14 +1,27 @@
-from cQueue import cQueue
+﻿from cQueue import cQueue
 from multiprocessing import Value
 
 
-
+'''
+@기능
+    현재각도와 목표각도를 가지고 모터를 동작할 시간단위를 계산하고 ret하는 함수.
+@인자
+    -target : 목표각도
+    -current : 현재각도
+@ret 
+    -int : 모터를 동작시킬 시간단위 수'''
 def CalculatingTime(target : int , current : int ) -> int : 
     resultTime =  current+1
     return resultTime
 
-#@out :   
-#currentAngle
+'''
+@기능
+    모터동작을 수행하는 함수.  목표 각도가 담긴 requestQ가 비워질 때 까지 요청을 하나씩 처리한다. 
+@인자
+    -requestQ  :  목표 각도 요청이 담긴 Queue, 공유 메모리 공간으로서의 Queue가 아니다.
+    
+@OUT
+    -currentAngle : 모터의 현재각도. 다른 프로세스와 공유가능한 값이다. 요청 처리 후 바뀐다.'''
 def CallingMotor(requestQ : cQueue , currentAngle : Value ):
     while not (requestQ.IsEmpty()):
         item = requestQ.Pop()
@@ -20,6 +33,6 @@ def CallingMotor(requestQ : cQueue , currentAngle : Value ):
         #todo :  
         #   -call motor controller(can not use function, manu controll needed)
         #   -Update currentAngle Value.(can not use function)
-        #   ���ο����� �ӽú����� current�����ϴٰ� ���������� ������Ʈ?
+        #   내부에서는 임시변수로 current관리하다가 마지막에만 업데이트?
     print("ChildDead")
     return

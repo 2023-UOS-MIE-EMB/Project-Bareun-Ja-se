@@ -1,6 +1,14 @@
-from multiprocessing import Process, Manager
+﻿from multiprocessing import Process, Manager
 import time
 
+'''
+@기능
+    Python의 List를 이용하여 C 형식의 Queue를 구현한 클래스
+@ 생성자
+    기본생성자 인자없음
+@ 주의사항
+    저장 메모리인 Q에 직접 접근 불가
+'''
 class cQueue:
     __queue = None
 

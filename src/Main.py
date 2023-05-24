@@ -1,10 +1,16 @@
-from multiprocessing import Process, Value, Array,Queue, Manager
+﻿from multiprocessing import Process, Value, Array,Queue, Manager
 import time, os
 from cQueue import cQueue
 from PacketUtil import cPacketController
 import MotorUtils as Motor
 import DetectingSleep as Detection
 import random
+
+'''
+Jeong's Todo List:
+-PacketManger
+-TCP Server
+-Add Comment  '''
 
 
 #global_motor
@@ -30,7 +36,7 @@ if __name__ == '__main__':
         if(packetManager.ParsingPacket(recvedPacket) == False):
             continue  #return to recv
 
-        packetResults = packetManager.GetBody()
+        packetResults = packetManager.GetContents()
 
         #Data from (dict)packetResults  
         targetAngle = 10
@@ -48,18 +54,18 @@ if __name__ == '__main__':
             exit()
 
     #motor
-        #if not ( targetAngle == -1) : 
-        #    gcMotorRequestQ.Push(targetAngle)
+        if not ( targetAngle == -1) : 
+            gcMotorRequestQ.Push(targetAngle)
             
-        #    #</Testing
-        #    for i in range(20):
-        #        gcMotorRequestQ.Push(i)
-        #       #gcMotorRequestQ.Push(random.randint(5,30))
-        #    #/>
-        #    if( gpMotor.is_alive()  == False) : 
-        #        gpMotor = Process(target=Motor.CallingMotor, args=( gcMotorRequestQ,gCurrentAngle))
-        #        gcMotorRequestQ = cQueue() #reset
-        #        gpMotor.start()
+            #<Testing>
+            for i in range(20):
+                gcMotorRequestQ.Push(i)
+               #gcMotorRequestQ.Push(random.randint(5,30))
+            
+            if( gpMotor.is_alive()  == False) : 
+                gpMotor = Process(target=Motor.CallingMotor, args=( gcMotorRequestQ,gCurrentAngle))
+                gcMotorRequestQ = cQueue() #reset
+                gpMotor.start()
 
     #detectomg sleep
         if not (alarmMode == 0) :  #need detection
