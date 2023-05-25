@@ -9,12 +9,12 @@ import random
 '''
 Jeong's Todo List:
 -TCP Server
-'''
+''' 
 
 #global_motor
 gpMotor = Process()
 gcMotorRequestQ = cQueue()      
-gCurrentAngle = Value('i',0)                    #base value,
+gCurrentStage = Value('i',0)                    #base value,
 
 #global_detection
 gpDetection = Process()
@@ -39,7 +39,7 @@ if __name__ == '__main__':
             continue  #return to recv
 
         #Data from (dict)packetResults  
-        targetAngle = 10
+        targetStage = 10fi
         alarmTime = 5
         alarmMode = random.randint(0,1)
         print("Mode is : ", alarmMode)
@@ -54,8 +54,8 @@ if __name__ == '__main__':
             exit()
 
     #motor
-        if not ( targetAngle == -1) : 
-            gcMotorRequestQ.Push(targetAngle)
+        if not ( targetStage == -1) : 
+            gcMotorRequestQ.Push(targetStage)
             
             #<Testing>
             for i in range(20):
@@ -63,7 +63,7 @@ if __name__ == '__main__':
                 gcMotorRequestQ.Push(random.randint(5,30))
             
             if( gpMotor.is_alive()  == False) : 
-                gpMotor = Process(target=Motor.CallingMotor, args=( gcMotorRequestQ,gCurrentAngle))
+                gpMotor = Process(target=Motor.CallingMotor, args=( gcMotorRequestQ,gCurrentStage))
                 gcMotorRequestQ.Clean() #reset
                 gpMotor.start()
 
