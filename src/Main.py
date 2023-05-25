@@ -59,12 +59,12 @@ if __name__ == '__main__':
             
             #<Testing>
             for i in range(20):
-                gcMotorRequestQ.Push(i)
-               #gcMotorRequestQ.Push(random.randint(5,30))
+                #gcMotorRequestQ.Push(i)
+                gcMotorRequestQ.Push(random.randint(5,30))
             
             if( gpMotor.is_alive()  == False) : 
                 gpMotor = Process(target=Motor.CallingMotor, args=( gcMotorRequestQ,gCurrentAngle))
-                gcMotorRequestQ = cQueue() #reset
+                gcMotorRequestQ.Clean() #reset
                 gpMotor.start()
 
     #detectomg sleep
