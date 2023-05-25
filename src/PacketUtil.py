@@ -36,7 +36,7 @@ class cPacketManager:
         
         packetList = []
 
-        packetBody = json.dumps(sendingContent, indent = 0)
+        packetBody = json.dumps(dataToSend, indent = 0)
         packetBody = packetBody.replace(' ','') #body
 
         bodySize = len(packetBody)
@@ -102,7 +102,7 @@ if __name__ == '__main__':
     packetManager = cPacketManager()
 
     sendingContent = { "1" : "10", "2" : "3" }
-    rsult, packet = packetManager.MakingPacketToSend(sendingContent)
+    result, packet = packetManager.MakingPacketToSend(sendingContent)
     print(packet)
     print("---------")
     print(packetManager.ParsingPacket(packet))

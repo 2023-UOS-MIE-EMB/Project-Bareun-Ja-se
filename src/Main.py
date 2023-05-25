@@ -1,17 +1,15 @@
 ﻿from multiprocessing import Process, Value, Array,Queue, Manager
 import time, os
 from cQueue import cQueue
-from PacketUtil import cPacketController
+from PacketUtil import cPacketManager
 import MotorUtils as Motor
 import DetectingSleep as Detection
 import random
 
 '''
 Jeong's Todo List:
--PacketManger
 -TCP Server
--Add Comment  '''
-
+'''
 
 #global_motor
 gpMotor = Process()
@@ -30,13 +28,15 @@ if __name__ == '__main__':
     
     #Recv and Send
     while(1): 
-        recvedPacket = "recved msg from client"
-        packetManager = cPacketController()
-   
-        if(packetManager.ParsingPacket(recvedPacket) == False):
-            continue  #return to recv
+        packetManager = cPacketManager()
 
-        packetResults = packetManager.GetContents()
+        sendingContent = { "1" : "10", "2" : "3" }
+        result, recvedPacket = packetManager.MakingPacketToSend(sendingContent)
+
+        packetResults = packetManager.ParsingPacket(recvedPacket)
+
+        if( packetResults == None):
+            continue  #return to recv
 
         #Data from (dict)packetResults  
         targetAngle = 10
@@ -83,7 +83,9 @@ if __name__ == '__main__':
         else : 
             NowStreamingAddr = gBaseStreamAddr
 
-        result , packet = packetManager.MakingPacketToSendClient(NowStreamingAddr)
+            sendingData = {"5" : NowStreamingAddr}
+
+        result , packet = packetManager.MakingPacketToSend(sendingData)
 
         if(result == False) : 
             print("StreamingError!")
@@ -94,8 +96,6 @@ if __name__ == '__main__':
 
         time.sleep(1)
 
-
-     
     print( "Main : " , gcMotorRequestQ)
 
  

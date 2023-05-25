@@ -1,7 +1,6 @@
 ﻿from cQueue import cQueue
 from multiprocessing import Value
 
-
 '''
 @기능
     현재각도와 목표각도를 가지고 모터를 동작할 시간단위를 계산하고 ret하는 함수.
