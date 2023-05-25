@@ -39,7 +39,7 @@ if __name__ == '__main__':
             continue  #return to recv
 
         #Data from (dict)packetResults  
-        targetStage = 10fi
+        targetStage = 10
         alarmTime = 5
         alarmMode = random.randint(0,1)
         print("Mode is : ", alarmMode)
