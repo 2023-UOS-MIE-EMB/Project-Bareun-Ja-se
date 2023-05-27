@@ -29,7 +29,7 @@ class cPacketManager:
     @기능
         패킷에 넣을 컨텐츠를 패킷 형태로 만들어줌 
     @인자
-        - dataToSend : 패킷의 body에 들어갈 내용
+        -dataToSend : 패킷의 body에 들어갈 내용
     @ret 
         Tuple[bool, str] : [실행 성공여부, 만들어진 패킷]'''
     def MakingPacketToSend(self, dataToSend : dict) -> Tuple[bool, str] :

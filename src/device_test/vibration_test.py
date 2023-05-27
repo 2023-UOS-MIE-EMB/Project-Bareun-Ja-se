@@ -13,7 +13,7 @@ pwm = GPIO.PWM(pwm, 1.0)
 pwm.start(50.0)
 
 while True:
-    for i in range(0,2):
+    for i in range(0,5):
         GPIO.output(vccs[1],False) #buzz
         GPIO.output(vccs[0],True) #speaker
         pwm.ChangeFrequency(200)  # 1이 적당

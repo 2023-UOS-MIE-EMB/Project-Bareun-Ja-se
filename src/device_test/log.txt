@@ -1,1 +1,0 @@
-[2KDevice 'wlan0' successfully activated with 'bb41ca28-3798-4a0d-9834-f0ac658fba8e'.

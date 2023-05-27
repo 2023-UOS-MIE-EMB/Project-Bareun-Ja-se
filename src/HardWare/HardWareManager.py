@@ -1,12 +1,87 @@
 import RPi.GPIO as GPIO
 import time
 
-def LED(pin : int, time : int):
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setup(pin, GPIO.OUT)
+class HardWareManager :
+    __outPins = [12,23,24,18]
+    __led = 12
+    __speaker = 23
+    __buzzer =  24
+    __pwm = 18
 
-    GPIO.output(pin, True)
-    time.sleep(time)
-    GPIO.output(pin, False) 
+    pwmObj = None
 
-    GPIO.cleanup(pin)
+    def __init__(self):
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setwarnings (False)
+
+        for i in self.__outPins:
+            GPIO.setup(i, GPIO.OUT,initial=False)
+
+        self.pwmObj = GPIO.PWM(__pwm,1.0)
+        
+        return
+
+    def __del__(self):
+        for i in self.__outPins:
+            GPIO.cleanup(i)
+        return
+    '''
+    @기능
+        LED에 동작 신호를 보낸다.
+    @인자
+        -action :  True -> on, False ->off'''
+    def RingLED(self, action :  bool):
+        GPIO.output(self.__led, action)
+        time.sleep(time)
+    '''
+    @기능
+        Buzzer를 일정시간 동안 울린다.
+    @인자
+        -time :  Buzzer를 울릴 시간'''
+    def RingBuzzer(self, time :  int) : 
+        self.pwmObj.start(50.0)
+
+        GPIO.output(self.__buzzer, True)
+        GPIO.output(self.__speaker, False)
+        self.pwmObj.ChangeFrequency(1) 
+        time.sleep(time)
+
+        self.pwmObj.stop()
+    '''
+    @기능
+        Speaker를 일정시간 동안 울린다.
+    @인자
+        -time :  speaker를 울릴 시간'''
+    def RingSpeaker(self, time :  int) : 
+        self.pwmObj.start(50.0)
+
+        GPIO.output(self.__buzzer, False)
+        GPIO.output(self.__speaker,True)
+        self.pwmObj.ChangeFrequency(200)
+        time.sleep(time)
+
+        self.pwmObj.stop()
+    '''
+    @기능
+        Speaker & buzzer 를  일정시간 동안  번갈아 가며 울린다.
+    @인자
+        -time :  전체 동작 시간
+        -interval : 각각의 기기가 울리는 시간, speaker와 buzzer 모두 같다.'''
+    def RingBuzzerAndSpeaker(self, time :  int, interval : int) :
+        self.pwmObj.start(50.0)
+
+        for i in range(0, int(time/2*interval) ) :
+            GPIO.output(self.__buzzer, False)
+            GPIO.output(self.__speaker,True)
+            self.pwmObj.ChangeFrequency(200)
+            time.sleep(interval)
+            GPIO.output(self.__buzzer, False)
+            GPIO.output(self.__speaker,True)
+            self.pwmObj.ChangeFrequency(200)
+            time.sleep(interval)
+            
+        self.pwmObj.stop()
+
+
+
+
