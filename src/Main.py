@@ -1,8 +1,8 @@
 ﻿from multiprocessing import Process, Value, Array,Queue, Manager
 import time, os
-from cQueue import cQueue
+from myQueue import cQueue
 from PacketUtil import cPacketManager
-import MotorUtils as Motor
+import MotorManager as Motor
 import DetectingSleep as Detection
 import random
 

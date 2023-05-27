@@ -1,7 +1,11 @@
 import RPi.GPIO as GPIO
 import time
 
-class HardWareManager :
+'''
+@기능
+    led, speaker, buzzer의 gpio제어를 총괄하는 클래스
+@생성자 인자 없음'''
+class cHardWareManager :
     __outPins = [12,23,24,18]
     __led = 12
     __speaker = 23
