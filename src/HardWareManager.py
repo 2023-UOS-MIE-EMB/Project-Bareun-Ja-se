@@ -1,10 +1,10 @@
-import RPi.GPIO as GPIO
+ï»¿import RPi.GPIO as GPIO
 import time
 
 '''
-@±â´É
-    led, speaker, buzzerÀÇ gpioÁ¦¾î¸¦ ÃÑ°ıÇÏ´Â Å¬·¡½º
-@»ı¼ºÀÚ ÀÎÀÚ ¾øÀ½'''
+@ê¸°ëŠ¥
+    led, speaker, buzzerì˜ gpioì œì–´ë¥¼ ì´ê´„í•˜ëŠ” í´ë˜ìŠ¤
+@ìƒì„±ì ì¸ì ì—†ìŒ'''
 class cHardWareManager :
     __outPins = [12,23,24,18]
     __led = 12
@@ -21,7 +21,7 @@ class cHardWareManager :
         for i in self.__outPins:
             GPIO.setup(i, GPIO.OUT,initial=False)
 
-        self.pwmObj = GPIO.PWM(__pwm,1.0)
+        self.pwmObj = GPIO.PWM(self.__pwm,1.0)
         
         return
 
@@ -30,18 +30,18 @@ class cHardWareManager :
             GPIO.cleanup(i)
         return
     '''
-    @±â´É
-        LED¿¡ µ¿ÀÛ ½ÅÈ£¸¦ º¸³½´Ù.
-    @ÀÎÀÚ
+    @ê¸°ëŠ¥
+        LEDì— ë™ì‘ ì‹ í˜¸ë¥¼ ë³´ë‚¸ë‹¤.
+    @ì¸ì
         -action :  True -> on, False ->off'''
     def RingLED(self, action :  bool):
         GPIO.output(self.__led, action)
         time.sleep(time)
     '''
-    @±â´É
-        Buzzer¸¦ ÀÏÁ¤½Ã°£ µ¿¾È ¿ï¸°´Ù.
-    @ÀÎÀÚ
-        -time :  Buzzer¸¦ ¿ï¸± ½Ã°£'''
+    @ê¸°ëŠ¥
+        Buzzerë¥¼ ì¼ì •ì‹œê°„ ë™ì•ˆ ìš¸ë¦°ë‹¤.
+    @ì¸ì
+        -time :  Buzzerë¥¼ ìš¸ë¦´ ì‹œê°„'''
     def RingBuzzer(self, time :  int) : 
         self.pwmObj.start(50.0)
 
@@ -52,10 +52,10 @@ class cHardWareManager :
 
         self.pwmObj.stop()
     '''
-    @±â´É
-        Speaker¸¦ ÀÏÁ¤½Ã°£ µ¿¾È ¿ï¸°´Ù.
-    @ÀÎÀÚ
-        -time :  speaker¸¦ ¿ï¸± ½Ã°£'''
+    @ê¸°ëŠ¥
+        Speakerë¥¼ ì¼ì •ì‹œê°„ ë™ì•ˆ ìš¸ë¦°ë‹¤.
+    @ì¸ì
+        -time :  speakerë¥¼ ìš¸ë¦´ ì‹œê°„'''
     def RingSpeaker(self, time :  int) : 
         self.pwmObj.start(50.0)
 
@@ -66,11 +66,11 @@ class cHardWareManager :
 
         self.pwmObj.stop()
     '''
-    @±â´É
-        Speaker & buzzer ¸¦  ÀÏÁ¤½Ã°£ µ¿¾È  ¹ø°¥¾Æ °¡¸ç ¿ï¸°´Ù.
-    @ÀÎÀÚ
-        -time :  ÀüÃ¼ µ¿ÀÛ ½Ã°£
-        -interval : °¢°¢ÀÇ ±â±â°¡ ¿ï¸®´Â ½Ã°£, speaker¿Í buzzer ¸ğµÎ °°´Ù.'''
+    @ê¸°ëŠ¥
+        Speaker & buzzer ë¥¼  ì¼ì •ì‹œê°„ ë™ì•ˆ  ë²ˆê°ˆì•„ ê°€ë©° ìš¸ë¦°ë‹¤.
+    @ì¸ì
+        -time :  ì „ì²´ ë™ì‘ ì‹œê°„
+        -interval : ê°ê°ì˜ ê¸°ê¸°ê°€ ìš¸ë¦¬ëŠ” ì‹œê°„, speakerì™€ buzzer ëª¨ë‘ ê°™ë‹¤.'''
     def RingBuzzerAndSpeaker(self, time :  int, interval : int) :
         self.pwmObj.start(50.0)
 

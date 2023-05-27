@@ -1,6 +1,7 @@
 ﻿from myQueue import cQueue
 from multiprocessing import Value
 import RPi.GPIO as GPIO
+import time
 
 '''
 @기능
@@ -21,12 +22,12 @@ class __cMotorManager() :
     __rpmSleep = 0.005
     __cycle = 6400
 
-    def __int__(rpmSleep:float = 0.005 , cycle:int = 6400):
+    def __int__(self,rpmSleep:float = 0.005 , cycle:int = 6400):
         GPIO.setmode(GPIO.BCM)
         GPIO.setwarnings (False)
         
-        __rpmSleep = rpmSleep
-        __cycle = cycle
+        self.__rpmSleep = rpmSleep
+        self.__cycle = cycle
 
         for i in self.__outPins:
             GPIO.setup(i, GPIO.OUT,initial=True)
@@ -36,19 +37,19 @@ class __cMotorManager() :
             GPIO.cleanup(i)
         return
 
-    def RotatingMotor(cycles : int):   
+    def RotatingMotor(self, cycles : int):   
          
         if( cycles < 0 ) :
-            GPIO.output(__dir, False)  #CCW
+            GPIO.output(self.__dir, False)  #CCW
             cycles =  -cycles
         else : 
-            GPIO.output(__dir, True)  #CW
+            GPIO.output(self.__dir, True)  #CW
 
         for i in range(cycles):
-            GPIO.output(__clk, True)   
-            time.sleep(__rpmSleep)
-            GPIO.output(__clk, False)    
-            time.sleep(__rpmSleep)
+            GPIO.output(self.__clk, True)   
+            time.sleep(self.__rpmSleep)
+            GPIO.output(self.__clk, False)    
+            time.sleep(self.__rpmSleep)
 
 '''
 @기능
