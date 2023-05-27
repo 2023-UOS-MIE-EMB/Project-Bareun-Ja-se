@@ -7,10 +7,6 @@ import DetectingSleep as Detection
 from NetWorkManager import cNetWorkManager
 import random
 
-'''
-Jeong's Todo List:
--TCP Server
-''' 
 
 gMAXBUF = 512
 
@@ -23,43 +19,74 @@ gCurrentStage = Value('i',0)                    #base value,
 gpDetection = Process()
 gStreamingAddr = Queue(1) 
 gBaseStreamAddr = "UnvaluableAddr"
+
 #gLatestStreamAddr = ""
 gStreamingAddr.put(gBaseStreamAddr)             #base value
 
+gPacketManager  = cPacketManager()
+gNetWorkManager = cNetWorkManager()
+
+
+'''
+@기능 
+    자원 회수 기능을 한다.'''
+def ReapingResources():
+
+    while(gpMotor.is_alive() ==  False):
+        gcMotorRequestQ.Clean() #reset
+        gcMotorRequestQ.Push(0) #초기단계로 모터 되돌리기 -> 현재각도값 저장대신 이게 나을지도? 종료될때 최대한 접히는게 보관도 용이할듯
+        gpMotor = Process(target=Motor.CallingMotor, args=( gcMotorRequestQ,gCurrentStage))
+        gpMotor.start()
+
+    gpMotor.join()
+
+    if( gpDetection.is_alive()  == True ) :
+        gpDetection.terminate() 
+        time.sleep(2) #neccessary, waiting Process died
+     
+    gNetWorkManager.ClientSocket.close()
+    gNetWorkManager.ServerSocket.close()
+
+    return
+
+'''
+@기능 
+    종료기능을 한다.'''
+def ShutingDown():
+    ReapingResources()
+    os.system("shutdown now")
+
 
 if __name__ == '__main__':
-    
-    packetManager = cPacketManager()
 
 #Prior-Connect via HotSpot
-    nw = cNetWorkManager()
 
-    nw.TurnOnHotSpot()
-    nw.SetTCPServerSocket()
-    nw.ServerSocket.listen()
+    gNetWorkManager.TurnOnHotSpot()
+    gNetWorkManager.SetTCPServerSocket()
+    gNetWorkManager.ServerSocket.listen()
 
-    nw.ClientSocket, clientAddr = nw.ServerSocket.accept()
+    gNetWorkManager.ClientSocket, clientAddr = gNetWorkManager.ServerSocket.accept()
 
-    wifiPacket = nw.ClientSocket.recv(gMAXBUF)
-    WifiDict =  packetManager.ParsingPacket(wifiPacket)
-    nw.SocketClose()
+    wifiPacket = gNetWorkManager.ClientSocket.recv(gMAXBUF)
+    WifiDict =  gPacketManager.ParsingPacket(wifiPacket)
+    gNetWorkManager.SocketClose()
 
-    nw.SetGeneralWiFi(WifiDict["8"],WifiDict["9"])
-    nw.SetTCPServerSocket()
-    nw.ServerSocket.listen()
+    gNetWorkManager.SetGeneralWiFi(WifiDict["8"],WifiDict["9"])
+    gNetWorkManager.SetTCPServerSocket()
+    gNetWorkManager.ServerSocket.listen()
 
-    nw.ClientSocket, clientAddr = nw.ServerSocket.accept()
+    gNetWorkManager.ClientSocket, clientAddr = gNetWorkManager.ServerSocket.accept()
 
     #Recv and Send
     while(1): 
 
-        recvedPacket = nw.ClientSocket.recv(gMAXBUF)
+        recvedPacket = gNetWorkManager.ClientSocket.recv(gMAXBUF)
 
         #for test
         #sendingContent = { "1" : "10", "2" : "3" }
         #result, recvedPacket = packetManager.MakingPacketToSend(sendingContent)
 
-        packetResults = packetManager.ParsingPacket(recvedPacket)
+        packetResults = gPacketManager.ParsingPacket(recvedPacket)
 
         if( packetResults == None):
             continue  #return to recv
@@ -78,11 +105,7 @@ if __name__ == '__main__':
 
     #power controll
         if(isShutdown):
-            #todo:
-            #   -set device initial pose via motor
-            #   -resources reaping 
-            #   os("shutdown now")
-            exit()
+            ShutingDown()
 
     #motor
         if not ( targetStage == -1) : 
@@ -107,7 +130,7 @@ if __name__ == '__main__':
         else :
             if( gpDetection.is_alive()  == True ) : #but detection is working now, turn off detection process
                 gpDetection.terminate() 
-                time.sleep(1) #neccessary, waiting Process died
+                time.sleep(2) #neccessary, waiting Process died
         
         if( gpDetection.is_alive()  == True ):
             NowStreamingAddr = gStreamingAddr.get()
@@ -116,7 +139,7 @@ if __name__ == '__main__':
 
             sendingData = {"5" : NowStreamingAddr}
 
-        result , packet = packetManager.MakingPacketToSend(sendingData)
+        result , packet = gPacketManager.MakingPacketToSend(sendingData)
 
         if(result == False) : 
             print("StreamingError!")
