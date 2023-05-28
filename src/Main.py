@@ -78,8 +78,6 @@ if __name__ == '__main__':
     gNetWorkManager.SetTCPServerSocket()
     gNetWorkManager.Listen()
     
-
-    #Recv and Send
     while(1): 
         gNetWorkManager.Accept()
         recvedPacket = gNetWorkManager.Recv()
