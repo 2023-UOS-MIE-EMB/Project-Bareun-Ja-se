@@ -99,6 +99,7 @@ if __name__ == '__main__':
         #isShutdown = False
 
         targetStage = int(packetResults["0"])
+        strmRequest = bool(packetResults["1"])
         alarmTime = int(packetResults["3"])
         alarmMode = int(packetResults["4"])
         isShutdown = int(packetResults["2"])
@@ -123,8 +124,13 @@ if __name__ == '__main__':
                 gpMotor = Process(target=Motor.CallingMotor, args=( gcMotorRequestQ,gCurrentStage))
                 gcMotorRequestQ.Clean() #reset
                 gpMotor.start()
-
-    #detectomg sleep
+    #strmRequest
+        if( strmRequest == True):
+            if( gpDetection.is_alive()  == True ) : #but detection is working now, turn off detection process
+                    gpDetection.terminate() 
+                    time.sleep(2) #neccessary, waiting Process died
+        
+    #detecting sleep
         if not (alarmMode == 0) :  #need detection
             if(gpDetection.is_alive()  == False ) : #but detection doesn't work, turn on detection process
                 gpDetection = Process(target=Detection.Detection, args=(alarmTime, alarmMode, gStreamingAddr))
@@ -134,12 +140,12 @@ if __name__ == '__main__':
             if( gpDetection.is_alive()  == True ) : #but detection is working now, turn off detection process
                 gpDetection.terminate() 
                 time.sleep(2) #neccessary, waiting Process died
-        
+    
         if( gpDetection.is_alive()  == True ):
             NowStreamingAddr = gStreamingAddr.get()
         else : 
             NowStreamingAddr = gBaseStreamAddr
-            
+        
         sendingData = {"5" : NowStreamingAddr}
         result , packet = gPacketManager.MakingPacketToSend(sendingData)
 
