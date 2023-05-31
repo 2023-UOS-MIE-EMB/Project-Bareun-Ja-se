@@ -17,7 +17,7 @@ from flask import Flask, Response, render_template
 '''
 class cFaceDetector:
 
-    def __init__(self, host_ip='172.16.63.142', camera_port=0, frame_width=640, frame_height=480, 
+    def __init__(self, host_ip='127.0.0.1', camera_port=0, frame_width=640, frame_height=480, 
                  working_time=15, alarm_time=5, sleeping_time=2):
 
         self.FaceDetectModel = dlib.get_frontal_face_detector()
