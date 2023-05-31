@@ -107,28 +107,28 @@ if __name__ == '__main__':
         for key,value in packetResults.items():
             print(key,":", value)
 
-    #power controll
-        if(isShutdown):
-            ShutingDown()
+    # #power controll
+    #     if(isShutdown):
+    #         ShutingDown()
 
-    #motor
-        if not ( targetStage == -1) : 
-            gcMotorRequestQ.Push(targetStage)
+    # #motor
+    #     if not ( targetStage == -1) : 
+    #         gcMotorRequestQ.Push(targetStage)
             
-            #<Testing>
-            for i in range(20):
-                #gcMotorRequestQ.Push(i)
-                gcMotorRequestQ.Push(random.randint(5,30))
+    #         #<Testing>
+    #         for i in range(20):
+    #             #gcMotorRequestQ.Push(i)
+    #             gcMotorRequestQ.Push(random.randint(5,30))
             
-            if( gpMotor.is_alive()  == False) : 
-                gpMotor = Process(target=Motor.CallingMotor, args=( gcMotorRequestQ,gCurrentStage))
-                gcMotorRequestQ.Clean() #reset
-                gpMotor.start()
-    #strmRequest
-        if( strmRequest == True):
-            if( gpDetection.is_alive()  == True ) : #but detection is working now, turn off detection process
-                    gpDetection.terminate() 
-                    time.sleep(2) #neccessary, waiting Process died
+    #         if( gpMotor.is_alive()  == False) : 
+    #             gpMotor = Process(target=Motor.CallingMotor, args=( gcMotorRequestQ,gCurrentStage))
+    #             gcMotorRequestQ.Clean() #reset
+    #             gpMotor.start()
+    # #strmRequest
+    #     if( strmRequest == True):
+    #         if( gpDetection.is_alive()  == True ) : #but detection is working now, turn off detection process
+    #                 gpDetection.terminate() 
+    #                 time.sleep(2) #neccessary, waiting Process died
         
     #detecting sleep
         if not (alarmMode == 0) :  #need detection

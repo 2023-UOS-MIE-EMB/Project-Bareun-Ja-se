@@ -1,5 +1,6 @@
 import cv2, dlib, time
 from flask import Flask, Response, render_template
+import socket
 '''
 @기능
     웹캠을 이용하여 얼굴을 감지하고, 이를 웹 페이지에 실시간으로 스트리밍한다. 
@@ -109,4 +110,8 @@ def vid():
     return Response(face_detector.detecting_face_for_streaming(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 if __name__ == '__main__':
-    App.run(host=face_detector.host_ip, port="5000", debug=False, threaded=True)
+    s= socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
+    s.connect(("8.8.8.8",80))
+    hostip = s.getsockname()[0]
+    s.close()
+    App.run(host=hostip, port="5000", debug=False, threaded=True)

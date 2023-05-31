@@ -2,6 +2,7 @@
 import time
 import random
 
+import socket
 from facedetect_module import cFaceDetector
 from flask import Flask, Response, render_template
 
@@ -21,13 +22,13 @@ face_detector = cFaceDetector()
 @OUT
     -streamingAddr  :  다른 프로세스와 공유할 '스트리밍 웹주소 str' 을 넣는 Q '''
 def Detection( alarmTime :int , alarmMode : int , streamingAddr : Queue):
-    global App
+    # global App
     streamingAddr.cancel_join_thread()
 
-    App.run(host=face_detector.host_ip, port="7777", debug=False, threaded=True)
+    # App.run(host=face_detector.host_ip, port="5000", debug=False, threaded=True)
 
     #need to test after terminated 
-    #subprocess.Popen(["facedetect_module.py", ]) 
+    subprocess.Popen(["facedetect_module.py", ]) 
 
     while(1):
         #todo

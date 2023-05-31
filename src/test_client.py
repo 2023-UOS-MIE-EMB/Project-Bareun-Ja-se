@@ -8,8 +8,8 @@ PacketManager = cPacketManager()
 tcp_socket = socket.create_connection(('localhost', 7777))
  
 try:
-    sendingContent = {  "0" : "10",
-                        "1" : "10", 
+    sendingContent = {  "0" : "0",
+                        "1" : "0", 
                         "2" : "0" ,
                         "3" : "5",
                         "4" : "1"}
