@@ -1,12 +1,9 @@
 ﻿from multiprocessing import Queue
 import time
 import random
-
-import socket
 from facedetect_module import cFaceDetector
-from flask import Flask, Response, render_template
-
-import subprocess
+import socket
+from flask import Flask, Response
 
 App = Flask(__name__)
 face_detector = cFaceDetector()
@@ -22,13 +19,14 @@ face_detector = cFaceDetector()
 @OUT
     -streamingAddr  :  다른 프로세스와 공유할 '스트리밍 웹주소 str' 을 넣는 Q '''
 def Detection( alarmTime :int , alarmMode : int , streamingAddr : Queue):
-    # global App
+    global face_detector
     streamingAddr.cancel_join_thread()
-
-    # App.run(host=face_detector.host_ip, port="5000", debug=False, threaded=True)
-
-    #need to test after terminated 
-    subprocess.Popen(["facedetect_module.py", ]) 
+    s= socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
+    s.connect(("8.8.8.8",80))
+    hostip = s.getsockname()[0]
+    s.close()
+    face_detector = cFaceDetector(alarm_time = alarmTime, alarm_mode = alarmMode)
+    App.run(host=hostip, port="5000", debug=False, threaded=True)
 
     while(1):
         #todo
@@ -41,10 +39,7 @@ def Detection( alarmTime :int , alarmMode : int , streamingAddr : Queue):
         streamingAddr.put(tmpAddr)
         time.sleep(2)
 
-@App.route('/')
-def index():
-    return render_template('index.html')
-
 @App.route('/vid')
 def vid():
+    global face_detector
     return Response(face_detector.detecting_face_for_streaming(), mimetype='multipart/x-mixed-replace; boundary=frame')

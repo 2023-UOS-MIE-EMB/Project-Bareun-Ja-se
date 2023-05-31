@@ -18,8 +18,8 @@ import socket
 '''
 class cFaceDetector:
 
-    def __init__(self, host_ip='127.0.0.1', camera_port=0, frame_width=640, frame_height=480, 
-                 working_time=15, alarm_time=5, sleeping_time=2):
+    def __init__(self, host_ip='127.0.0.1', camera_port=0, frame_width=320, frame_height=240, 
+                 working_time=15, alarm_time=5,alarm_mode=0, sleeping_time=2):
 
         self.FaceDetectModel = dlib.get_frontal_face_detector()
 
@@ -34,15 +34,18 @@ class cFaceDetector:
         self.WorkingTime= working_time
         self.AlarmTime = alarm_time
         self.SleepingTime = sleeping_time
+        self.AlarmMode = alarm_mode
 
         self.FaceList = [] # 얼굴 유무를 담을 list. 얼굴없음(-1)과 얼굴탐지(1)이 들어감
     
     def detecting_face_for_streaming(self):
 
+        check_Sleeep = 0
+
         Camera = cv2.VideoCapture(self.CameraPort)
         Camera.set(3, self.FrameWidth)
         Camera.set(4, self.FrameHeight)
-
+        print("time : ", self.AlarmTime )
         StartAlarmTime = StartWorkingTime = time.time() # WorkingTime 계산을 위한 시작 시간
         while True:
             if (time.time() - StartWorkingTime) < self.WorkingTime: # WorkingTime 시간 동안
@@ -57,15 +60,24 @@ class cFaceDetector:
                     GrayFrame = cv2.equalizeHist(GrayFrame)            
                     faces = self.FaceDetectModel(GrayFrame)
                     if len(faces) == 0: 
-                        UserStatus = 'Sleep'
+                        UserStatus = 'Undetected'
                         self.StatusColor = (0, 0, 255)
-                        self.FaceList.append(-1) # 얼굴이 없으면 -1을 list에 추가
+                        #self.FaceList.append(-1) # 얼굴이 없으면 -1을 list에 추가
+                        check_Sleeep -= 1
                         cv2.putText(self.FrameDisplayingonWeb, UserStatus , (10,30), cv2.FONT_HERSHEY_DUPLEX, 1, self.StatusColor, 2)
                         print('no face')
-                    else: 
-                        UserStatus = 'Awake'
+                    else:
+                        for face in faces: 
+                            x = face.left()
+                            y = face.top()
+                            w = face.right() #-x
+                            h = face.bottom() #- y
+                            cv2.rectangle(self.FrameDisplayingonWeb,(x,y),(w,h),(50,200,0),2)
+
+                        UserStatus = 'Detected'
                         self.StatusColor = (0, 255, 0)
-                        self.FaceList.append(1) # 얼굴이 있으면 1을 list에 추가
+                        #self.FaceList.append(1) # 얼굴이 있으면 1을 list에 추가
+                        check_Sleeep += 1
                         cv2.putText(self.FrameDisplayingonWeb, UserStatus , (10,30), cv2.FONT_HERSHEY_DUPLEX, 1, self.StatusColor, 2)
                         print('face detected')
 
@@ -74,15 +86,18 @@ class cFaceDetector:
                     yield (b'--frame\r\n'
                         b'Content-Type: text/plain\r\n\r\n' + frame + b'\r\n')
                 else: # (elapsedTime > AlarmTime)  AlarmTime이 지나면 최종 판단
-                    faceCount = sum(self.FaceList)  # 졸음이 더 많으면 음수, 얼굴인식이 더 많으면 양수가 됨
-                    self.FaceList.clear()
-                    if faceCount < 0:
+                    #faceCount = sum(self.FaceList)  # 졸음이 더 많으면 음수, 얼굴인식이 더 많으면 양수가 됨
+                    #self.FaceList.clear()
+                    if check_Sleeep < 0:
                         UserStatus = 'Sleep'
                         self.StatusColor = (0, 0, 255)
                     else:
                         UserStatus = 'Awake'
                         self.StatusColor = (0, 255, 0)
+                    check_Sleeep = 0
+
                     print('Final: ',UserStatus)
+                    #ring alarm
                     cv2.putText(self.FrameDisplayingonWeb, UserStatus , (10,30), cv2.FONT_HERSHEY_DUPLEX, 2, self.StatusColor, 2)
                     _, buffer = cv2.imencode('.jpg', self.FrameDisplayingonWeb)
                     frame = buffer.tostring()
@@ -97,17 +112,22 @@ class cFaceDetector:
                 StartAlarmTime = StartWorkingTime = time.time()
         del (Camera)
 
+
 App = Flask(__name__)
 
 face_detector = cFaceDetector()
 
-@App.route('/')
-def index():
-    return render_template('index.html')
+# @App.route('/')
+# def index():
+#     return render_template('index.html')
 
-@App.route('/vid')
-def vid():
-    return Response(face_detector.detecting_face_for_streaming(), mimetype='multipart/x-mixed-replace; boundary=frame')
+#todo:
+'''
+dlt comment
+adding ring
+system 구상도 그리기
+
+'''
 
 if __name__ == '__main__':
     s= socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
