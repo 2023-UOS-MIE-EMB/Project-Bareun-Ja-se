@@ -12,6 +12,10 @@ class cHardWareManager :
     __buzzer =  24
     __pwm = 18
 
+    __modeBuzzer = 0 << 1    
+    __modeSpeaker = 0 << 2    
+    __modeBoth = __modeBuzzer | __modeSpeaker  
+
     pwmObj = None
 
     def __init__(self):
@@ -85,6 +89,23 @@ class cHardWareManager :
             time.sleep(interval)
             
         self.pwmObj.stop()
+    '''
+    @기능
+        bitmask AlarmMode에 따라 스피커와 부저 제어
+    @인자
+        -alarmMode : 비트마스킹 알람 모드, ([스피커][부저])
+        -workingTime : 알람이 울리는 시간 '''
+    def RingFromMode(self, alarmMode : int, workingTime : int) :
+
+        if(alarmMode == self.__modeBuzzer):
+            self.RingBuzzer(workingTime)
+        elif(alarmMode == self.__modeSpeaker):
+            self.RingSpeaker(workingTime)
+        elif(alarmMode == self.__modeBoth):
+            self.RingBuzzerAndSpeaker(workingTime,workingTime/2)
+        else:
+            print("wrong Mode!")
+
 
 
 

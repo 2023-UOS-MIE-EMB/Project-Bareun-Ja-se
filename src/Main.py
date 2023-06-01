@@ -23,19 +23,17 @@ gCurrentStage = Value('i',0)                    #base value,
 
 #global_detection
 gpApp : Flask = Flask(__name__)
-gface_detector : cFaceDetector = None
+gFace_detector : cFaceDetector = None
 gpDetection = Process()
- 
 gBaseStreamAddr = "UnvaluableAddr"
 gStreamingAddr = gBaseStreamAddr
 
 @gpApp.route('/vid')
 def vid():
-    global gface_detector
-    return Response(gface_detector.detecting_face_for_streaming(), mimetype='multipart/x-mixed-replace; boundary=frame')
+    global gFace_detector
+    return Response(gFace_detector.detecting_face_for_streaming(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
-#gLatestStreamAddr = ""
-#gStreamingAddr.put(gBaseStreamAddr)             #base value
+#global_networking
 gPacketManager  = cPacketManager()
 gNetWorkManager = cNetWorkManager(Hssid="rpi42",maxBuf=512)
 
@@ -70,49 +68,40 @@ def ShutingDown():
     ReapingResources()
     os.system("shutdown now")
 
-
+#for testing 
+__test = True
 
 if __name__ == '__main__':
 
 #Prior-Connect via HotSpot
+    if not (__test):
+        gNetWorkManager.turnonhotspot()
+        gNetWorkManager.settcpserversocket()
 
-    # gNetWorkManager.TurnOnHotSpot()
-    # gNetWorkManager.SetTCPServerSocket()
+        gNetWorkManager.listen()
+        gNetWorkManager.accept()
+        wifipacket = gNetWorkManager.recv()
+        wifidict =  gPacketManager.parsingpacket(wifipacket)
+        gNetWorkManager.close()
 
-    # gNetWorkManager.Listen()
-    # gNetWorkManager.Accept()
-    # wifiPacket = gNetWorkManager.Recv()
-    # WifiDict =  gPacketManager.ParsingPacket(wifiPacket)
-    # gNetWorkManager.Close()
-
-    # gNetWorkManager.SetGeneralWiFi(WifiDict["8"],WifiDict["9"])
-    # gNetWorkManager.SetTCPServerSocket()
-    # gNetWorkManager.Listen()
-    # gNetWorkManager.Accept()
+        gNetWorkManager.setgeneralwifi(wifidict["8"],wifidict["9"])
+        gNetWorkManager.settcpserversocket()
+        gNetWorkManager.listen()
+        gNetWorkManager.accept()
 
     #<\Test>
-    gNetWorkManager.SetTCPServerSocket()
-    gNetWorkManager.Listen()
+    if (__test):
+        gNetWorkManager.SetTCPServerSocket()
+        gNetWorkManager.Listen()
     
     while(1): 
         gNetWorkManager.Accept()
         recvedPacket = gNetWorkManager.Recv()
 
-        #for test
-        #sendingContent = { "1" : "10", "2" : "3" }
-        #result, recvedPacket = packetManager.MakingPacketToSend(sendingContent)
-
         packetResults = gPacketManager.ParsingPacket(recvedPacket)
 
         if( packetResults == None):
             continue  #return to recv
-
-        #for test
-        #targetStage = 10
-        #alarmTime = 5
-        #alarmMode = random.randint(0,1)
-        #print("Mode is : ", alarmMode)
-        #isShutdown = False
 
         targetStage = int(packetResults["0"])
         strmRequest = bool(packetResults["1"])
@@ -148,7 +137,7 @@ if __name__ == '__main__':
         
     #detecting sleep
 
-        if( gpDetection.is_alive()  == True ) : #but detection is working now, turn off detection process
+        if( gpDetection.is_alive()  == True ) : #detection is working now, turn off detection process
                 gStreamingAddr = gBaseStreamAddr
                 gpDetection.terminate() 
                 time.sleep(2) #neccessary, waiting Process died
@@ -156,7 +145,7 @@ if __name__ == '__main__':
         if not (alarmMode == 0) :  #need detection
             hostip = gNetWorkManager.GethostIP()
             gStreamingAddr = utils.ConcatStr(hostip,[':5000','/vid'])
-            gface_detector = cFaceDetector(alarm_mode = alarmMode,alarm_time = alarmTime)
+            gFace_detector = cFaceDetector(alarm_mode = alarmMode,alarm_time = alarmTime)
             gpDetection = Process(target=gpApp.run, kwargs={"host":hostip,"port":'5000',"debug":False, "threaded":True})
             gpDetection.start()
     
@@ -169,7 +158,8 @@ if __name__ == '__main__':
             exit()
 
         #send Packet
-        print("senddata: " ,packet)
+        if __debug__ :
+            print("senddata: " ,packet)
         gNetWorkManager.SendAll(packet)
 
         time.sleep(1)
