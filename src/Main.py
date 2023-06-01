@@ -136,31 +136,31 @@ if __name__ == '__main__':
     #                 time.sleep(2) #neccessary, waiting Process died
         
     #detecting sleep
-
-        if( gpDetection.is_alive()  == True ) : #detection is working now, turn off detection process
-                gStreamingAddr = gBaseStreamAddr
-                gpDetection.terminate() 
-                time.sleep(2) #neccessary, waiting Process died
+        if not (alarmTime < 0) : #alarm Control needed
+            if( gpDetection.is_alive()  == True ) : #detection is working now, turn off detection process
+                    gStreamingAddr = gBaseStreamAddr
+                    gpDetection.terminate() 
+                    time.sleep(2) #neccessary, waiting Process died
                 
-        if not (alarmMode == 0) :  #need detection
-            hostip = gNetWorkManager.GethostIP()
-            gStreamingAddr = utils.ConcatStr(hostip,[':5000','/vid'])
-            gFace_detector = cFaceDetector(alarm_mode = alarmMode,alarm_time = alarmTime)
-            gpDetection = Process(target=gpApp.run, kwargs={"host":hostip,"port":'5000',"debug":False, "threaded":True})
-            gpDetection.start()
+            if not (alarmMode == 0) :  #need detection
+                hostip = gNetWorkManager.GethostIP()
+                gStreamingAddr = utils.ConcatStr(hostip,[':5000','/vid'])
+                gFace_detector = cFaceDetector(alarm_mode = alarmMode,alarm_time = alarmTime)
+                gpDetection = Process(target=gpApp.run, kwargs={"host":hostip,"port":'5000',"debug":False, "threaded":True})
+                gpDetection.start()
     
-        NowStreamingAddr = gStreamingAddr
-        sendingData = {"5" : NowStreamingAddr}
-        result , packet = gPacketManager.MakingPacketToSend(sendingData)
+            NowStreamingAddr = gStreamingAddr
+            sendingData = {"5" : NowStreamingAddr}
+            result , packet = gPacketManager.MakingPacketToSend(sendingData)
 
-        if(result == False) : 
-            print("StreamingError!")
-            exit()
+            if(result == False) : 
+                print("StreamingError!")
+                exit()
 
-        #send Packet
-        if __debug__ :
-            print("senddata: " ,packet)
-        gNetWorkManager.SendAll(packet)
+            #send Packet
+            if __debug__ :
+                print("senddata: " ,packet)
+            gNetWorkManager.SendAll(packet)
 
         time.sleep(1)
 
