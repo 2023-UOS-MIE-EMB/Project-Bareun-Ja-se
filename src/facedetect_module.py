@@ -40,6 +40,7 @@ class cFaceDetector:
     
     def detecting_face_for_streaming(self):
 
+        print("time:", self.AlarmTime)
         check_Sleeep = 0
 
         Camera = cv2.VideoCapture(self.CameraPort)

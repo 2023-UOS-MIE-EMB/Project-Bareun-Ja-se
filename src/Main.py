@@ -22,8 +22,8 @@ gcMotorRequestQ = cQueue()
 gCurrentStage = Value('i',0)                    #base value,
 
 #global_detection
-gpApp = Flask(__name__)
-gface_detector = cFaceDetector()
+gpApp : Flask = Flask(__name__)
+gface_detector : cFaceDetector = None
 gpDetection = Process()
  
 gBaseStreamAddr = "UnvaluableAddr"
@@ -31,7 +31,7 @@ gStreamingAddr = gBaseStreamAddr
 
 @gpApp.route('/vid')
 def vid():
-    global face_detector
+    global gface_detector
     return Response(gface_detector.detecting_face_for_streaming(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 #gLatestStreamAddr = ""
@@ -151,6 +151,7 @@ if __name__ == '__main__':
             if(gpDetection.is_alive()  == False ) : #but detection doesn't work, turn on detection process
                 hostip = gNetWorkManager.GethostIP()
                 gStreamingAddr = utils.ConcatStr(hostip,[':5000','/vid'])
+                gface_detector = cFaceDetector(alarm_mode = alarmMode,alarm_time = alarmTime)
                 gpDetection = Process(target=gpApp.run, kwargs={"host":hostip,"port":'5000',"debug":False, "threaded":True})
                 gpDetection.start()
 
