@@ -4,6 +4,7 @@ import random
 from facedetect_module import cFaceDetector
 import socket
 from flask import Flask, Response
+import utils
 
 App = Flask(__name__)
 face_detector = cFaceDetector()
@@ -26,18 +27,24 @@ def Detection( alarmTime :int , alarmMode : int , streamingAddr : Queue):
     hostip = s.getsockname()[0]
     s.close()
     face_detector = cFaceDetector(alarm_time = alarmTime, alarm_mode = alarmMode)
-    App.run(host=hostip, port="5000", debug=False, threaded=True)
 
-    while(1):
-        #todo
-        #1.start recognization
-        #2.put streaming web ip to streamingAddr 
-        print("detecing...")
-        #for test
-        tmpAddr = str(random.randint(0,4000))
+    strmAddr = utils.ConcatStr(hostip,'/vid')
+    streamingAddr.put(strmAddr)
+    
+    App.run(host=hostip, port="5000", debug=False, threaded=False)
 
-        streamingAddr.put(tmpAddr)
-        time.sleep(2)
+    
+
+    # while(1):
+    #     #todo
+    #     #1.start recognization
+    #     #2.put streaming web ip to streamingAddr 
+    #     print("detecing...")
+    #     #for test
+    #     tmpAddr = str(random.randint(0,4000))
+
+    #     streamingAddr.put(tmpAddr)
+    #     time.sleep(2)
 
 @App.route('/vid')
 def vid():

@@ -45,7 +45,7 @@ class cFaceDetector:
         Camera = cv2.VideoCapture(self.CameraPort)
         Camera.set(3, self.FrameWidth)
         Camera.set(4, self.FrameHeight)
-        print("time : ", self.AlarmTime )
+        #print("time : ", self.AlarmTime )
         StartAlarmTime = StartWorkingTime = time.time() # WorkingTime 계산을 위한 시작 시간
         while True:
             if (time.time() - StartWorkingTime) < self.WorkingTime: # WorkingTime 시간 동안
@@ -65,7 +65,7 @@ class cFaceDetector:
                         #self.FaceList.append(-1) # 얼굴이 없으면 -1을 list에 추가
                         check_Sleeep -= 1
                         cv2.putText(self.FrameDisplayingonWeb, UserStatus , (10,30), cv2.FONT_HERSHEY_DUPLEX, 1, self.StatusColor, 2)
-                        print('no face')
+                        #print('no face')
                     else:
                         for face in faces: 
                             x = face.left()
@@ -79,7 +79,7 @@ class cFaceDetector:
                         #self.FaceList.append(1) # 얼굴이 있으면 1을 list에 추가
                         check_Sleeep += 1
                         cv2.putText(self.FrameDisplayingonWeb, UserStatus , (10,30), cv2.FONT_HERSHEY_DUPLEX, 1, self.StatusColor, 2)
-                        print('face detected')
+                        #print('face detected')
 
                     _, buffer = cv2.imencode('.jpg', self.FrameDisplayingonWeb)
                     frame = buffer.tostring()
@@ -96,7 +96,7 @@ class cFaceDetector:
                         self.StatusColor = (0, 255, 0)
                     check_Sleeep = 0
 
-                    print('Final: ',UserStatus)
+                    #print('Final: ',UserStatus)
                     #ring alarm
                     cv2.putText(self.FrameDisplayingonWeb, UserStatus , (10,30), cv2.FONT_HERSHEY_DUPLEX, 2, self.StatusColor, 2)
                     _, buffer = cv2.imencode('.jpg', self.FrameDisplayingonWeb)

@@ -9,10 +9,10 @@ tcp_socket = socket.create_connection(('localhost', 7777))
  
 try:
     sendingContent = {  "0" : "0",
-                        "1" : "1", 
+                        "1" : "0", 
                         "2" : "0" ,
                         "3" : "5",
-                        "4" : "1"}
+                        "4" : "0"}
     result, packet = PacketManager.MakingPacketToSend(sendingContent)
     print(packet)
     parsingresult = PacketManager.ParsingPacket(packet)
@@ -22,7 +22,6 @@ try:
     tcp_socket.sendall(packet)
     print("---------")
 
-    
     buf = tcp_socket.recv(512)
     print("recv:",buf)
  

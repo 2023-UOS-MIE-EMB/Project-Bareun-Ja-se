@@ -154,8 +154,8 @@ if __name__ == '__main__':
             exit()
 
         #send Packet
-        #gNetWorkManager.SendAll(packet)
         print("senddata: " ,packet)
+        gNetWorkManager.SendAll(packet)
 
         time.sleep(1)
 

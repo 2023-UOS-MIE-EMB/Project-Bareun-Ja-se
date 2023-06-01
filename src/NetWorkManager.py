@@ -75,7 +75,7 @@ class cNetWorkManager():
         return buf
     
     def SendAll(self, buf : str):
-        self.__ServerSocket.sendall(buf)
+        self.__ClientSocket.sendall(buf)
 
     def Close(self):
         self.__ServerSocket.close()
