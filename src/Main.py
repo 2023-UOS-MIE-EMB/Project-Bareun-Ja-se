@@ -8,6 +8,12 @@ from NetWorkManager import cNetWorkManager
 import random
 
 
+from facedetect_module import cFaceDetector
+import socket
+from flask import Flask, Response
+import utils
+
+
 gMAXBUF = 512
 
 #global_motor
@@ -16,13 +22,20 @@ gcMotorRequestQ = cQueue()
 gCurrentStage = Value('i',0)                    #base value,
 
 #global_detection
+gpApp = Flask(__name__)
+gface_detector = cFaceDetector()
 gpDetection = Process()
-gStreamingAddr = Queue(1) 
+ 
 gBaseStreamAddr = "UnvaluableAddr"
+gStreamingAddr = gBaseStreamAddr
+
+@gpApp.route('/vid')
+def vid():
+    global face_detector
+    return Response(gface_detector.detecting_face_for_streaming(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 #gLatestStreamAddr = ""
-gStreamingAddr.put(gBaseStreamAddr)             #base value
-
+#gStreamingAddr.put(gBaseStreamAddr)             #base value
 gPacketManager  = cPacketManager()
 gNetWorkManager = cNetWorkManager(Hssid="rpi42",maxBuf=512)
 
@@ -41,6 +54,7 @@ def ReapingResources():
     gpMotor.join()
 
     if( gpDetection.is_alive()  == True ) :
+        print("kill")
         gpDetection.terminate() 
         time.sleep(2) #neccessary, waiting Process died
      
@@ -55,6 +69,8 @@ def ReapingResources():
 def ShutingDown():
     ReapingResources()
     os.system("shutdown now")
+
+
 
 if __name__ == '__main__':
 
@@ -133,7 +149,9 @@ if __name__ == '__main__':
     #detecting sleep
         if not (alarmMode == 0) :  #need detection
             if(gpDetection.is_alive()  == False ) : #but detection doesn't work, turn on detection process
-                gpDetection = Process(target=Detection.Detection, args=(alarmTime, alarmMode, gStreamingAddr))
+                hostip = gNetWorkManager.GethostIP()
+                gStreamingAddr = utils.ConcatStr(hostip,[':5000','/vid'])
+                gpDetection = Process(target=gpApp.run, kwargs={"host":hostip,"port":'5000',"debug":False, "threaded":True})
                 gpDetection.start()
 
         else :
@@ -142,7 +160,7 @@ if __name__ == '__main__':
                 time.sleep(2) #neccessary, waiting Process died
     
         if( gpDetection.is_alive()  == True ):
-            NowStreamingAddr = gStreamingAddr.get()
+            NowStreamingAddr = gStreamingAddr
         else : 
             NowStreamingAddr = gBaseStreamAddr
         
@@ -161,4 +179,3 @@ if __name__ == '__main__':
 
  
 
- 

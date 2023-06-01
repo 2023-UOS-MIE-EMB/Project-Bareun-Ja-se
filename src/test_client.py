@@ -4,7 +4,6 @@ import socket
  
 
 PacketManager = cPacketManager()
-
 tcp_socket = socket.create_connection(('localhost', 7777))
  
 try:
