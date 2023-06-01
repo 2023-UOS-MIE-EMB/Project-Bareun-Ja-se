@@ -60,7 +60,7 @@ class cFaceDetector:
     def detecting_face_for_streaming(self):
 
         print("time:", self.__AlarmTime)
-        check_Sleeep = 0
+        check_Sleep = 0
 
         Camera = cv2.VideoCapture(self.__CameraPort)
         Camera.set(3, self.__FrameWidth)
@@ -84,7 +84,9 @@ class cFaceDetector:
                     if len(faces) == 0: 
                         UserStatus = 'Undetected'
                         self.__StatusColor = (0, 0, 255)
-                        check_Sleeep -= 1
+                        check_Sleep -= 1
+                        if(check_Sleep < 0 ):
+                            self.__HardWareManager.RingLED(True)    #led ON
                         cv2.putText(self.__FrameDisplayingonWeb, UserStatus , (10,30), cv2.FONT_HERSHEY_DUPLEX, 1, self.__StatusColor, 2)
                     else:
                         for face in faces: 
@@ -96,7 +98,9 @@ class cFaceDetector:
 
                         UserStatus = 'Detected'
                         self.__StatusColor = (0, 255, 0)
-                        check_Sleeep += 1
+                        check_Sleep += 1
+                        if(check_Sleep >= 0 ):
+                            self.__HardWareManager.RingLED(False)    #led OFF
                         cv2.putText(self.__FrameDisplayingonWeb, UserStatus , (10,30), cv2.FONT_HERSHEY_DUPLEX, 1, self.__StatusColor, 2)
 
                     _, buffer = cv2.imencode('.jpg', self.__FrameDisplayingonWeb)
@@ -104,13 +108,13 @@ class cFaceDetector:
                     yield (b'--frame\r\n'
                         b'Content-Type: text/plain\r\n\r\n' + frame + b'\r\n')
                 else: # (elapsedTime > AlarmTime)  AlarmTime이 지나면 최종 판단
-                    if check_Sleeep < 0:
+                    if check_Sleep < 0:
                         UserStatus = 'Sleep'
                         self.__StatusColor = (0, 0, 255)
                     else:
                         UserStatus = 'Awake'
                         self.__StatusColor = (0, 255, 0)
-                    check_Sleeep = 0
+                    check_Sleep = 0
 
                     #ring alarm
                     self.__HardWareManager.RingFromMode(self.__AlarmMode,elapsedTime)

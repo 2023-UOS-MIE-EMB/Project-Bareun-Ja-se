@@ -40,7 +40,6 @@ class cHardWareManager :
         -action :  True -> on, False ->off'''
     def RingLED(self, action :  bool):
         GPIO.output(self.__led, action)
-        time.sleep(time)
     '''
     @기능
         Buzzer를 일정시간 동안 울린다.
