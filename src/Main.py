@@ -147,24 +147,20 @@ if __name__ == '__main__':
     #                 time.sleep(2) #neccessary, waiting Process died
         
     #detecting sleep
-        if not (alarmMode == 0) :  #need detection
-            if(gpDetection.is_alive()  == False ) : #but detection doesn't work, turn on detection process
-                hostip = gNetWorkManager.GethostIP()
-                gStreamingAddr = utils.ConcatStr(hostip,[':5000','/vid'])
-                gface_detector = cFaceDetector(alarm_mode = alarmMode,alarm_time = alarmTime)
-                gpDetection = Process(target=gpApp.run, kwargs={"host":hostip,"port":'5000',"debug":False, "threaded":True})
-                gpDetection.start()
 
-        else :
-            if( gpDetection.is_alive()  == True ) : #but detection is working now, turn off detection process
+        if( gpDetection.is_alive()  == True ) : #but detection is working now, turn off detection process
+                gStreamingAddr = gBaseStreamAddr
                 gpDetection.terminate() 
                 time.sleep(2) #neccessary, waiting Process died
+                
+        if not (alarmMode == 0) :  #need detection
+            hostip = gNetWorkManager.GethostIP()
+            gStreamingAddr = utils.ConcatStr(hostip,[':5000','/vid'])
+            gface_detector = cFaceDetector(alarm_mode = alarmMode,alarm_time = alarmTime)
+            gpDetection = Process(target=gpApp.run, kwargs={"host":hostip,"port":'5000',"debug":False, "threaded":True})
+            gpDetection.start()
     
-        if( gpDetection.is_alive()  == True ):
-            NowStreamingAddr = gStreamingAddr
-        else : 
-            NowStreamingAddr = gBaseStreamAddr
-        
+        NowStreamingAddr = gStreamingAddr
         sendingData = {"5" : NowStreamingAddr}
         result , packet = gPacketManager.MakingPacketToSend(sendingData)
 
