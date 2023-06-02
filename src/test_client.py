@@ -9,8 +9,8 @@ tcp_socket = socket.create_connection(('localhost', 7777))
 try:
     sendingContent = {  "0" : "0",
                         "1" : "1", 
-                        "2" : "0" ,
-                        "3" : "5",
+                        "2" : "0",
+                        "3" : "10",
                         "4" : "1"}
     result, packet = PacketManager.MakingPacketToSend(sendingContent)
     print(packet)

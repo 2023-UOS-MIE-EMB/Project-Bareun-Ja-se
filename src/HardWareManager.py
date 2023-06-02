@@ -12,8 +12,8 @@ class cHardWareManager :
     __buzzer =  24
     __pwm = 18
 
-    __modeBuzzer = 0 << 1    
-    __modeSpeaker = 0 << 2    
+    __modeBuzzer = 1 << 0    
+    __modeSpeaker = 1 << 1    
     __modeBoth = __modeBuzzer | __modeSpeaker  
 
     pwmObj = None
@@ -45,13 +45,14 @@ class cHardWareManager :
         Buzzer를 일정시간 동안 울린다.
     @인자
         -time :  Buzzer를 울릴 시간'''
-    def RingBuzzer(self, time :  int) : 
+    def RingBuzzer(self, times :  int) : 
         self.pwmObj.start(50.0)
-
+        if __debug__:
+            print("buzzer")
         GPIO.output(self.__buzzer, True)
         GPIO.output(self.__speaker, False)
         self.pwmObj.ChangeFrequency(1) 
-        time.sleep(time)
+        time.sleep(times)
 
         self.pwmObj.stop()
     '''
@@ -59,13 +60,14 @@ class cHardWareManager :
         Speaker를 일정시간 동안 울린다.
     @인자
         -time :  speaker를 울릴 시간'''
-    def RingSpeaker(self, time :  int) : 
+    def RingSpeaker(self, times :  int) : 
         self.pwmObj.start(50.0)
-
+        if __debug__:
+            print("speakeer")
         GPIO.output(self.__buzzer, False)
         GPIO.output(self.__speaker,True)
         self.pwmObj.ChangeFrequency(200)
-        time.sleep(time)
+        time.sleep(times)
 
         self.pwmObj.stop()
     '''
@@ -74,10 +76,11 @@ class cHardWareManager :
     @인자
         -time :  전체 동작 시간
         -interval : 각각의 기기가 울리는 시간, speaker와 buzzer 모두 같다.'''
-    def RingBuzzerAndSpeaker(self, time :  int, interval : int) :
+    def RingBuzzerAndSpeaker(self, times :  int, interval : int) :
         self.pwmObj.start(50.0)
-
-        for i in range(0, int(time/2*interval) ) :
+        if __debug__:
+            print("both")
+        for i in range(0, int(times/2*interval) ) :
             GPIO.output(self.__buzzer, False)
             GPIO.output(self.__speaker,True)
             self.pwmObj.ChangeFrequency(200)
@@ -105,7 +108,22 @@ class cHardWareManager :
         else:
             print("wrong Mode!")
 
+    def RingBuzzer2(self, status :bool) : 
+
+        if (status == True):
+            self.pwmObj.start(50.0)
+            if __debug__:
+                print("buzzer")
+            GPIO.output(self.__buzzer, True)
+            GPIO.output(self.__speaker, False)
+            self.pwmObj.ChangeFrequency(1) 
+            
+        if (status == False):
+            self.pwmObj.stop()
+        
 
 
+if __name__ == "__main__":
+    hw = cHardWareManager()
 
-
+    hw.RingFromMode(1,10)

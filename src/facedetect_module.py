@@ -61,7 +61,9 @@ class cFaceDetector:
 
         print("time:", self.__AlarmTime)
         check_Sleep = 0
-
+        count_threshold = 100
+        status_threshold = 10
+        
         Camera = cv2.VideoCapture(self.__CameraPort)
         Camera.set(3, self.__FrameWidth)
         Camera.set(4, self.__FrameHeight)
@@ -84,7 +86,9 @@ class cFaceDetector:
                     if len(faces) == 0: 
                         UserStatus = 'Undetected'
                         self.__StatusColor = (0, 0, 255)
-                        check_Sleep -= 1
+                        check_Sleep = max(check_Sleep-1,-count_threshold)
+                        if __debug__ : 
+                            print(check_Sleep)
                         if(check_Sleep < 0 ):
                             self.__HardWareManager.RingLED(True)    #led ON
                         cv2.putText(self.__FrameDisplayingonWeb, UserStatus , (10,30), cv2.FONT_HERSHEY_DUPLEX, 1, self.__StatusColor, 2)
@@ -98,7 +102,9 @@ class cFaceDetector:
 
                         UserStatus = 'Detected'
                         self.__StatusColor = (0, 255, 0)
-                        check_Sleep += 1
+                        check_Sleep = min(check_Sleep+1,count_threshold)
+                        if __debug__ : 
+                            print(check_Sleep)
                         if(check_Sleep >= 0 ):
                             self.__HardWareManager.RingLED(False)    #led OFF
                         cv2.putText(self.__FrameDisplayingonWeb, UserStatus , (10,30), cv2.FONT_HERSHEY_DUPLEX, 1, self.__StatusColor, 2)
@@ -108,16 +114,18 @@ class cFaceDetector:
                     yield (b'--frame\r\n'
                         b'Content-Type: text/plain\r\n\r\n' + frame + b'\r\n')
                 else: # (elapsedTime > AlarmTime)  AlarmTime이 지나면 최종 판단
-                    if check_Sleep < 0:
+                    if check_Sleep < -status_threshold:
                         UserStatus = 'Sleep'
                         self.__StatusColor = (0, 0, 255)
-                    else:
+                    elif check_Sleep > status_threshold :
                         UserStatus = 'Awake'
                         self.__StatusColor = (0, 255, 0)
                     check_Sleep = 0
 
                     #ring alarm
-                    self.__HardWareManager.RingFromMode(self.__AlarmMode,elapsedTime)
+                    if(UserStatus == 'Sleep'):
+                        print("ring bell")
+                        self.__HardWareManager.RingFromMode(self.__AlarmMode,10) #10seconds
 
                     cv2.putText(self.__FrameDisplayingonWeb, UserStatus , (10,30), cv2.FONT_HERSHEY_DUPLEX, 2, self.__StatusColor, 2)
                     _, buffer = cv2.imencode('.jpg', self.__FrameDisplayingonWeb)

@@ -3,7 +3,7 @@ import time, os
 from myQueue import cQueue
 from PacketManager import cPacketManager
 import MotorManager as Motor
-import DetectingSleep as Detection
+#import DetectingSleep as Detection
 from NetWorkManager import cNetWorkManager
 import random
 
