@@ -31,6 +31,7 @@ class cHardWareManager :
 
     def __del__(self):
         for i in self.__outPins:
+            GPIO.output(i, False)
             GPIO.cleanup(i)
         return
     '''
@@ -117,7 +118,7 @@ class cHardWareManager :
             GPIO.output(self.__buzzer, True)
             GPIO.output(self.__speaker, False)
             self.pwmObj.ChangeFrequency(1) 
-            
+
         if (status == False):
             self.pwmObj.stop()
         

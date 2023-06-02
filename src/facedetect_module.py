@@ -3,6 +3,7 @@ from flask import Flask, Response, render_template
 import socket
 from typing import Tuple
 from HardWareManager import cHardWareManager
+
 '''
 @기능
     웹캠을 이용하여 얼굴을 감지하고, 이를 웹 페이지에 실시간으로 스트리밍한다. 
@@ -106,6 +107,7 @@ class cFaceDetector:
                         if __debug__ : 
                             print(check_Sleep)
                         if(check_Sleep >= 0 ):
+                            self.__HardWareManager.RingBuzzer2(False)
                             self.__HardWareManager.RingLED(False)    #led OFF
                         cv2.putText(self.__FrameDisplayingonWeb, UserStatus , (10,30), cv2.FONT_HERSHEY_DUPLEX, 1, self.__StatusColor, 2)
 
@@ -120,12 +122,13 @@ class cFaceDetector:
                     elif check_Sleep > status_threshold :
                         UserStatus = 'Awake'
                         self.__StatusColor = (0, 255, 0)
-                    check_Sleep = 0
+                        check_Sleep = int(status_threshold/2)
 
                     #ring alarm
                     if(UserStatus == 'Sleep'):
                         print("ring bell")
-                        self.__HardWareManager.RingFromMode(self.__AlarmMode,10) #10seconds
+                        self.__HardWareManager.RingBuzzer2(True)
+                        check_Sleep = int(-status_threshold/2)
 
                     cv2.putText(self.__FrameDisplayingonWeb, UserStatus , (10,30), cv2.FONT_HERSHEY_DUPLEX, 2, self.__StatusColor, 2)
                     _, buffer = cv2.imencode('.jpg', self.__FrameDisplayingonWeb)
@@ -140,7 +143,7 @@ class cFaceDetector:
                     print('sleeping...zzz')
                 time.sleep(SleepingTime)
                 StartAlarmTime = StartWorkingTime = time.time()
-
+            
         del (Camera)
 
 
