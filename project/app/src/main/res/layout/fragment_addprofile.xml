@@ -164,7 +164,7 @@
 
         <Button
             android:id="@+id/addAlarmSoundmodeButton"
-            android:layout_width="110dp"
+            android:layout_width="140dp"
             android:layout_height="wrap_content"
             android:text="소리"
             android:textSize="17sp"
@@ -176,30 +176,20 @@
 
         <Button
             android:id="@+id/addAlarmVibemodeButton"
-            android:layout_width="110dp"
+            android:layout_width="140dp"
             android:layout_height="wrap_content"
             android:text="진동"
             android:textSize="17sp"
             app:layout_constraintTop_toTopOf="@+id/addAlarmSoundmodeButton"
             app:layout_constraintStart_toEndOf="@+id/addAlarmSoundmodeButton"
-            app:layout_constraintEnd_toStartOf="@id/addAlarmSoundvibemodeButton"
-            android:onClick="selectAlarmMode" />
-
-        <Button
-            android:id="@+id/addAlarmSoundvibemodeButton"
-            android:layout_width="140dp"
-            android:layout_height="wrap_content"
-            android:text="소리 / 진동"
-            android:textSize="17sp"
-            app:layout_constraintTop_toTopOf="@+id/addAlarmSoundmodeButton"
-            app:layout_constraintStart_toEndOf="@+id/addAlarmVibemodeButton"
             app:layout_constraintEnd_toEndOf="parent"
             android:onClick="selectAlarmMode" />
+
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            app:layout_constraintTop_toBottomOf="@id/addAlarmSoundvibemodeButton"
+            app:layout_constraintTop_toBottomOf="@id/addAlarmSoundmodeButton"
             app:layout_constraintBottom_toTopOf="@id/addProfileButton"
             android:background="@color/black"
             />
@@ -213,7 +203,7 @@
             android:text="프로필 추가"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/addAlarmSoundvibemodeButton" />
+            app:layout_constraintTop_toBottomOf="@id/addAlarmSoundmodeButton" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

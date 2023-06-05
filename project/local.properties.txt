@@ -1,1 +1,1 @@
-'sdk.dir=C:\Users\su\AppData\Local\Android\Sdk'
+C:\Users\su\AppData\Local\Android\Sdk

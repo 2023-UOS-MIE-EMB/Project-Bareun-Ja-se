@@ -36,17 +36,14 @@ class AddProfileFragment : Fragment() {
         val alarmSwitch = view.findViewById<Switch>(R.id.addAlarmSwitch)
         val alarmSoundmodeButton = view.findViewById<Button>(R.id.addAlarmSoundmodeButton)
         val alarmVibemodeButton = view.findViewById<Button>(R.id.addAlarmVibemodeButton)
-        val alarmSoundvibemodeButton = view.findViewById<Button>(R.id.addAlarmSoundvibemodeButton)
 
         alarmSwitch.isChecked = false
         alarmSoundmodeButton.isEnabled = false
         alarmVibemodeButton.isEnabled = false
-        alarmSoundvibemodeButton.isEnabled = false
         profileAlarmTimeEditText.isEnabled = false
 
         alarmSoundmodeButton.setOnClickListener { selectAlarmMode("소리") }
         alarmVibemodeButton.setOnClickListener { selectAlarmMode("진동") }
-        alarmSoundvibemodeButton.setOnClickListener { selectAlarmMode("소리 / 진동") }
 
         val addProfileButton = view.findViewById<Button>(R.id.addProfileButton)
 
@@ -55,13 +52,11 @@ class AddProfileFragment : Fragment() {
             if (isChecked) {
                 alarmSoundmodeButton.isEnabled = true
                 alarmVibemodeButton.isEnabled = true
-                alarmSoundvibemodeButton.isEnabled = true
                 profileAlarmTimeEditText.isEnabled = true
                 Toast.makeText(requireContext(), "알람 ON : 알람 세부사항을 설정해주세요", Toast.LENGTH_SHORT).show()
             } else {
                 alarmSoundmodeButton.isEnabled = false
                 alarmVibemodeButton.isEnabled = false
-                alarmSoundvibemodeButton.isEnabled = false
                 profileAlarmTimeEditText.isEnabled = false
                 Toast.makeText(requireContext(), "알람 OFF", Toast.LENGTH_SHORT).show()
             }

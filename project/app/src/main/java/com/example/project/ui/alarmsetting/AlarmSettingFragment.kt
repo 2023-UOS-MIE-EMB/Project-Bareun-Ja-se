@@ -38,14 +38,12 @@ class AlarmSettingFragment : Fragment() {
         val alarmSwitch = view.findViewById<Switch>(R.id.alarmSwitch)
         val alarmSoundmodeButton = view.findViewById<Button>(R.id.alarmSoundmodeButton)
         val alarmVibemodeButton = view.findViewById<Button>(R.id.alarmVibemodeButton)
-        val alarmSoundvibemodeButton = view.findViewById<Button>(R.id.alarmSoundvibemodeButton)
         val saveButton = view.findViewById<Button>(R.id.saveAlarmSettingButton)
 
         profileAlarmTimeEditText.isEnabled = false
         alarmSwitch.isChecked = false
         alarmSoundmodeButton.isEnabled = false
         alarmVibemodeButton.isEnabled = false
-        alarmSoundvibemodeButton.isEnabled = false
 
         alarmSwitch.setOnCheckedChangeListener { _, isChecked ->
             isAlarmOn = isChecked
@@ -53,20 +51,17 @@ class AlarmSettingFragment : Fragment() {
                 profileAlarmTimeEditText.isEnabled = true
                 alarmSoundmodeButton.isEnabled = true
                 alarmVibemodeButton.isEnabled = true
-                alarmSoundvibemodeButton.isEnabled = true
                 Toast.makeText(requireContext(), "알람 ON", Toast.LENGTH_SHORT).show()
             } else {
                 profileAlarmTimeEditText.isEnabled = false
                 alarmSoundmodeButton.isEnabled = false
                 alarmVibemodeButton.isEnabled = false
-                alarmSoundvibemodeButton.isEnabled = false
                 Toast.makeText(requireContext(), "알람 OFF", Toast.LENGTH_SHORT).show()
             }
         }
 
         alarmSoundmodeButton.setOnClickListener { selectAlarmMode("소리") }
         alarmVibemodeButton.setOnClickListener { selectAlarmMode("진동") }
-        alarmSoundvibemodeButton.setOnClickListener { selectAlarmMode("소리 / 진동") }
 
         saveButton.setOnClickListener {
             val sharedPreferences =
