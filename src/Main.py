@@ -104,7 +104,8 @@ if __name__ == '__main__':
             continue  #return to recv
 
         targetStage = int(packetResults["0"])
-        strmRequest = bool(packetResults["1"])
+        strmRequest = int(packetResults["1"])
+        print(strmRequest)
         alarmTime = int(packetResults["3"])
         alarmMode = int(packetResults["4"])
         isShutdown = int(packetResults["2"])
@@ -143,10 +144,15 @@ if __name__ == '__main__':
                     time.sleep(2) #neccessary, waiting Process died
                 
             if not (alarmMode == 0) :  #need detection
-                hostip = gNetWorkManager.GethostIP()
+                # hostip = gNetWorkManager.GethostIP()
+                hostip = '10.42.0.1' #rpihotspotcode
                 gStreamingAddr = utils.ConcatStr(hostip,[':5000','/vid'])
                 gFace_detector = cFaceDetector(alarm_mode = alarmMode,alarm_time = alarmTime)
-                gpDetection = Process(target=gpApp.run, kwargs={"host":hostip,"port":'5000',"debug":False, "threaded":True})
+                if(strmRequest==True):
+                    gpDetection = Process(target=gpApp.run, kwargs={"host":hostip,"port":'5000',"debug":False, "threaded":True})
+                else:
+                    gpDetection = Process(target=gFace_detector.dectecing_face_alarm)
+                    
                 gpDetection.start()
     
             NowStreamingAddr = gStreamingAddr

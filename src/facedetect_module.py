@@ -22,10 +22,6 @@ class cFaceDetector:
 
     __FaceDetectModel = dlib.get_frontal_face_detector()
 
-    __FrameDisplayingonWeb  = None
-    __StatusColor           = None
-
-    __host_ip       = None
     __CameraPort    = None
     __FrameWidth    = None
     __FrameHeight   = None
@@ -33,20 +29,22 @@ class cFaceDetector:
     __AlarmTime     = None
     __AlarmMode     = None
 
+    Camera = None
+
     def __init__(self, camera_port=0, frame_width=320, frame_height=240, 
                 alarm_time=5,alarm_mode=0):
 
         self.__FaceDetectModel = dlib.get_frontal_face_detector()
 
-        self.__FrameDisplayingonWeb = None
-        self.__StatusColor          = None
-
+        Frame = None
         self.__CameraPort       = camera_port
+
         self.__FrameWidth       = frame_width
         self.__FrameHeight      = frame_height
        
-        self.__AlarmTime        = alarm_time        
+        self.__AlarmTime        = alarm_time*60        
         self.__AlarmMode        = alarm_mode
+    
     '''
     @기능
         face_detecting에서 동작시간과 휴식시간을 리턴한다.
@@ -57,96 +55,116 @@ class cFaceDetector:
         SleepingTime = int(self.__AlarmTime/2)
         
         return WorkingTime, SleepingTime
-
-    def detecting_face_for_streaming(self):
-
+    
+    def dectecing_face_alarm(self):
         print("time:", self.__AlarmTime)
+        self.__HardWareManager.resetAll()
         check_Sleep = 0
-        count_threshold = 100
-        status_threshold = 10
-        
+        count_threshold = 90
+        status_threshold = count_threshold/3
+
         Camera = cv2.VideoCapture(self.__CameraPort)
         Camera.set(3, self.__FrameWidth)
         Camera.set(4, self.__FrameHeight)
-  
-        StartAlarmTime = StartWorkingTime = time.time() # WorkingTime 계산을 위한 시작 시간
+
+        userState = 1 #Awake
+        nowState = 1
+        RecentTime = StartWorkingTime = time.time() # WorkingTime 계산을 위한 시작 시간
         WorkingTime, SleepingTime = self.__SetExTimers()
+        #<\test>
+        # WorkingTime = 30
+        # SleepingTime = 0
+        # self.__AlarmMode = 0
+        while(True):
+            nowTime =  time.time()
+            if((nowTime - StartWorkingTime) >= WorkingTime) :
+                if __debug__:
+                    print("sleeping")
 
-        while True:
-            if (time.time() - StartWorkingTime) < WorkingTime: # WorkingTime 시간 동안
-                elapsedTime = time.time() - StartAlarmTime 
-
-                if elapsedTime < self.__AlarmTime: # AlarmTime 동안에는 얼굴탐지
+                self.__HardWareManager.resetAll()
+                time.sleep(SleepingTime)
+                StartWorkingTime = time.time()
+            else:    
+                if((nowTime - RecentTime) > 10 and userState == 0):
+                    #ring bell
+                    if __debug__:
+                        print("ring bell")
+                    self.__HardWareManager.RingFromMode(self.__AlarmMode,True)
+                    userState = 1
+                else:
                     Success, FrameForFaceDetect = Camera.read()
                     if not Success:
                         break
-                    self.__FrameDisplayingonWeb = FrameForFaceDetect
                     GrayFrame = cv2.cvtColor(FrameForFaceDetect, cv2.COLOR_BGR2GRAY)
                     GrayFrame = cv2.equalizeHist(GrayFrame)            
                     faces = self.__FaceDetectModel(GrayFrame)
-                    if len(faces) == 0: 
-                        UserStatus = 'Undetected'
-                        self.__StatusColor = (0, 0, 255)
+                    if len(faces) == 0:
+                        #Undetected Face
                         check_Sleep = max(check_Sleep-1,-count_threshold)
                         if __debug__ : 
                             print(check_Sleep)
                         if(check_Sleep < 0 ):
                             self.__HardWareManager.RingLED(True)    #led ON
-                        cv2.putText(self.__FrameDisplayingonWeb, UserStatus , (10,30), cv2.FONT_HERSHEY_DUPLEX, 1, self.__StatusColor, 2)
-                    else:
-                        for face in faces: 
-                            x = face.left()
-                            y = face.top()
-                            w = face.right() #-x
-                            h = face.bottom() #- y
-                            cv2.rectangle(self.__FrameDisplayingonWeb,(x,y),(w,h),(50,200,0),2)
-
-                        UserStatus = 'Detected'
-                        self.__StatusColor = (0, 255, 0)
+                        if(check_Sleep < -status_threshold) :
+                            nowState = 0 #sleep
+                        
+                    else: #detectedFace
+                        if __debug__:
+                            StatusColor = (0,0,255)
+                            cv2.putText(FrameForFaceDetect, "detected", (10,30), cv2.FONT_HERSHEY_DUPLEX, 1, StatusColor, 2)
                         check_Sleep = min(check_Sleep+1,count_threshold)
                         if __debug__ : 
                             print(check_Sleep)
                         if(check_Sleep >= 0 ):
-                            self.__HardWareManager.RingBuzzer2(False)
                             self.__HardWareManager.RingLED(False)    #led OFF
-                        cv2.putText(self.__FrameDisplayingonWeb, UserStatus , (10,30), cv2.FONT_HERSHEY_DUPLEX, 1, self.__StatusColor, 2)
-
-                    _, buffer = cv2.imencode('.jpg', self.__FrameDisplayingonWeb)
-                    frame = buffer.tostring()
-                    yield (b'--frame\r\n'
-                        b'Content-Type: text/plain\r\n\r\n' + frame + b'\r\n')
-                else: # (elapsedTime > AlarmTime)  AlarmTime이 지나면 최종 판단
-                    if check_Sleep < -status_threshold:
-                        UserStatus = 'Sleep'
-                        self.__StatusColor = (0, 0, 255)
-                    elif check_Sleep > status_threshold :
-                        UserStatus = 'Awake'
-                        self.__StatusColor = (0, 255, 0)
-                        check_Sleep = int(status_threshold/2)
-
-                    #ring alarm
-                    if(UserStatus == 'Sleep'):
-                        print("ring bell")
-                        self.__HardWareManager.RingBuzzer2(True)
-                        check_Sleep = int(-status_threshold/2)
-
-                    cv2.putText(self.__FrameDisplayingonWeb, UserStatus , (10,30), cv2.FONT_HERSHEY_DUPLEX, 2, self.__StatusColor, 2)
-                    _, buffer = cv2.imencode('.jpg', self.__FrameDisplayingonWeb)
-                    frame = buffer.tostring()
-                    yield (b'--frame\r\n'
-                        b'Content-Type: text/plain\r\n\r\n' + frame + b'\r\n')
-                    # 시간 초기화 후 다음 StartAlarmTime을 위해 다시 시작
-                    StartAlarmTime = time.time()
+                        if(check_Sleep > status_threshold) :
+                            nowState = 1 #awake
+                            self.__HardWareManager.RingFromMode(self.__AlarmMode,False)
             
-            else: # SleepingTime 동안 sleep
-                if __debug__ : 
-                    print('sleeping...zzz')
-                time.sleep(SleepingTime)
-                StartAlarmTime = StartWorkingTime = time.time()
-            
-        del (Camera)
+                    if(userState != nowState):
+                        userState = nowState   #state 판단 내리고 바뀔때만 초기화
+                        RecentTime = time.time()
+                    if __debug__ : 
+                        cv2.imshow("face",FrameForFaceDetect)
+        del(Camera)
 
+    def detecting_face_for_streaming(self):
+        print("time:", self.__AlarmTime)
+        self.__HardWareManager.resetAll()
 
+        Camera = cv2.VideoCapture(self.__CameraPort)
+        Camera.set(3, self.__FrameWidth)
+        Camera.set(4, self.__FrameHeight)
+
+        while True:
+            Success, FrameForFaceDetect = Camera.read()
+            if not Success:
+                break
+            RawFrame = FrameForFaceDetect
+            GrayFrame = cv2.cvtColor(FrameForFaceDetect, cv2.COLOR_BGR2GRAY)
+            GrayFrame = cv2.equalizeHist(GrayFrame)            
+            faces = self.__FaceDetectModel(GrayFrame)
+            if len(faces) == 0: 
+                UserStatus = 'Undetected'
+                self.__StatusColor = (0, 0, 255)
+                cv2.putText(RawFrame, UserStatus , (10,30), cv2.FONT_HERSHEY_DUPLEX, 1, self.__StatusColor, 2)
+            else:
+                for face in faces: 
+                    x = face.left()
+                    y = face.top()
+                    w = face.right() #-x
+                    h = face.bottom() #- y
+                    cv2.rectangle(RawFrame,(x,y),(w,h),(50,200,0),2)
+
+                UserStatus = 'Detected'
+                StatusColor = (0, 255, 0)
+                cv2.putText(RawFrame, UserStatus , (10,30), cv2.FONT_HERSHEY_DUPLEX, 1, self.__StatusColor, 2)
+
+            _, buffer = cv2.imencode('.jpg', RawFrame)
+            frame = buffer.tostring()
+            yield (b'--frame\r\n'
+                b'Content-Type: text/plain\r\n\r\n' + frame + b'\r\n')
+        del(Camera)
 
 #todo:
 '''
