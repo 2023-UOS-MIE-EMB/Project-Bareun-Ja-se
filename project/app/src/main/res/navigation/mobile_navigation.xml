@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_home">
+
+    <fragment
+        android:id="@+id/navigation_home"
+        android:name="com.example.project.ui.home.HomeFragment"
+        android:label="@string/title_home"
+        tools:layout="@layout/fragment_home" />
+
+    <fragment
+        android:id="@+id/addProfileFragment"
+        android:name="com.example.project.ui.addprofile.AddProfileFragment"
+        android:label="Add Profile"
+        tools:layout="@layout/fragment_addprofile"/>
+
+    <action
+        android:id="@+id/action_homeFragment_to_addProfileFragment"
+        app:destination="@id/addProfileFragment" />
+
+
+    <fragment
+        android:id="@+id/navigation_heightController"
+        android:name="com.example.project.ui.heightcontrolloer.HeightControllerFragment"
+        android:label="@string/title_heightcontroller"
+        tools:layout="@layout/fragment_heightcontroller" />
+
+    <fragment
+        android:id="@+id/navigation_alarmSetting"
+        android:name="com.example.project.ui.alarmsetting.AlarmSettingFragment"
+        android:label="@string/title_alarmsetting"
+        tools:layout="@layout/fragment_alarmsetting" />
+
+    <fragment
+        android:id="@+id/profileListFragment"
+        android:name="com.example.project.ui.profilelist.ProfileListFragment"
+        android:label="profileList"
+        tools:layout="@layout/fragment_profilelist" />
+
+    <action
+        android:id="@+id/action_addProfileFragment_to_profileListFragement"
+        app:destination="@id/profileListFragment" />
+
+    <action
+        android:id="@+id/action_homeFragment_to_profileListFragment"
+        app:destination="@id/profileListFragment" />
+</navigation>

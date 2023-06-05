@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_home"
+        android:icon="@drawable/ic_home_black_24dp"
+        android:title="@string/title_home" />
+
+    <item
+        android:id="@+id/navigation_heightController"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:icon="@drawable/height"
+        android:title="@string/title_heightcontroller" />
+
+    <item
+        android:id="@+id/navigation_alarmSetting"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:icon="@drawable/alarmsetting"
+        android:title="@string/title_alarmsetting"/>
+
+</menu>
