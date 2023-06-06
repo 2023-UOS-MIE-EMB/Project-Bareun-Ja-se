@@ -62,7 +62,7 @@ class HomeFragment : Fragment() {
 
         packetViewModel = ViewModelProvider(requireActivity()).get(PacketViewModel::class.java)
 
-
+        connectToRaspberryPiHotspot(requireActivity())
 
         val sharedPreferences = requireContext().getSharedPreferences(PROFILE_PREFS_KEY, Context.MODE_PRIVATE)
         val selectedProfileName = sharedPreferences.getString("selected_profile", null)
@@ -103,7 +103,7 @@ class HomeFragment : Fragment() {
 
         }
 
-        connectToRaspberryPiHotspot(requireContext())
+
 
 
     }
@@ -121,11 +121,7 @@ class HomeFragment : Fragment() {
         if (password.isEmpty()) {
             specifierBuilder.setWpa2Passphrase("") // 비밀번호 없는 연결 설정
         } else {
-            if (isWpa3Supported(context)) {
-                specifierBuilder.setWpa3Passphrase(password)
-            } else {
-                specifierBuilder.setWpa2Passphrase(password)
-            }
+            specifierBuilder.setWpa2Passphrase(password)
         }
 
         val specifier = specifierBuilder.build()
@@ -137,9 +133,10 @@ class HomeFragment : Fragment() {
 
         val networkCallback = object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
-                super.onAvailable(network)
 
                 // Wi-Fi에 성공적으로 연결되었을 때
+                if (!isAdded) return
+
                 requireActivity().runOnUiThread {
                     Toast.makeText(context, "라즈베리파이 핫스팟에 연결되었습니다.", Toast.LENGTH_SHORT).show()
 
@@ -158,6 +155,7 @@ class HomeFragment : Fragment() {
             override fun onUnavailable() {
                 super.onUnavailable()
                 // Wi-Fi 연결이 불가능한 경우
+                if (!isAdded) return
                 requireActivity().runOnUiThread {
                     Toast.makeText(context, "라즈베리파이 핫스팟 연결에 실패했습니다.", Toast.LENGTH_SHORT).show()
                 }
@@ -167,15 +165,7 @@ class HomeFragment : Fragment() {
         connectivityManager.requestNetwork(request, networkCallback)
     }
 
-    private fun isWpa3Supported(context: Context): Boolean {
-        val wifiManager = context.getSystemService(Context.WIFI_SERVICE) as WifiManager
-        val wifiInfo = wifiManager.connectionInfo
-        val frequency = wifiInfo?.frequency
 
-        // 주파수를 통해 WPA3 지원 여부를 간접적으로 확인
-        // 6GHz 대역 (WiFi 6E)을 사용하는 경우 WPA3를 지원한다고 가정
-        return frequency != null && frequency >= 5945
-    }
 
     fun showProfileDetails(profile: Profile?) {
         profile?.let {
