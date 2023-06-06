@@ -131,8 +131,9 @@ if __name__ == '__main__':
             
             if( gpMotor.is_alive()  == False) : 
                 gpMotor = Process(target=Motor.CallingMotor, args=( gcMotorRequestQ,gCurrentStage))
-                gcMotorRequestQ.Clean() #reset
                 gpMotor.start()
+                gcMotorRequestQ.Clean() #reset
+                
     #strmRequest
         if( strmRequest == True):
             if( gpDetection.is_alive()  == True ) : #but detection is working now, turn off detection process

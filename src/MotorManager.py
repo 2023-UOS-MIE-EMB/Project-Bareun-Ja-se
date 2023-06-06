@@ -60,7 +60,7 @@ class __cMotorManager() :
 @ret 
     -int : 모터를 동작시킬 사이클수'''
 def CalculatingTime(target : int , current : int ) -> int : 
-    resultTime =  (target+1) % 3000
+    resultTime =  (target+1) 
     return resultTime
 
 '''
@@ -74,10 +74,12 @@ def CalculatingTime(target : int , current : int ) -> int :
 def CallingMotor(requestQ : cQueue , currentStage : Value ):
 
     motor = __cMotorManager()
-
+    tmpCurrentStage = currentStage.value
+    print("child")
+    requestQ.PrintAll()
     while not (requestQ.IsEmpty()):
         nowTarget = requestQ.Pop()
-        tmpCurrentStage = currentStage.value
+        
         #</Testing
         print( " child : " , nowTarget)
         #/>

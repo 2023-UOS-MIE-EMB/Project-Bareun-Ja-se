@@ -42,4 +42,4 @@ class cQueue:
             print(i)
             
     def Clean(self):
-        __queue = []
+        self.__queue = []
