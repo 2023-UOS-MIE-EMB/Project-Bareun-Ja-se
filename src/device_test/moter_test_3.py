@@ -5,11 +5,11 @@ import time
 #1.5A / 1/16    
 GPIO.setmode(GPIO.BCM)
 
-dir = 27
-ena = 22
-clk = 17
+dir = 19
+ena = 13
+clk = 26
 
-plus = [16,20,21]
+plus = [21]
 
 for i in plus:
     GPIO.setup(i, GPIO.OUT, initial=True)

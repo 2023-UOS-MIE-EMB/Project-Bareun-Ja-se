@@ -37,5 +37,9 @@ class cQueue:
     def IsEmpty(self):
         return self.Size() == 0
 
+    def PrintAll(self):
+        for i in self.__queue:
+            print(i)
+            
     def Clean(self):
         __queue = []

@@ -74,7 +74,7 @@ class cFaceDetector:
         #<\test>
         # WorkingTime = 30
         # SleepingTime = 0
-        # self.__AlarmMode = 0
+        self.__AlarmMode = 0
         while(True):
             nowTime =  time.time()
             if((nowTime - StartWorkingTime) >= WorkingTime) :

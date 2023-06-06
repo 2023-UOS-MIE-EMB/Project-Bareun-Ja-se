@@ -95,6 +95,7 @@ if __name__ == '__main__':
         gNetWorkManager.Listen()
     
     while(1): 
+        
         gNetWorkManager.Accept()
         recvedPacket = gNetWorkManager.Recv()
 
@@ -117,24 +118,26 @@ if __name__ == '__main__':
     #     if(isShutdown):
     #         ShutingDown()
 
-    # #motor
-    #     if not ( targetStage == -1) : 
-    #         gcMotorRequestQ.Push(targetStage)
+    #motor
+        if not ( targetStage == -1) : 
+            gcMotorRequestQ.Push(targetStage)
+            print("nowQ: ")
+            gcMotorRequestQ.PrintAll()
             
-    #         #<Testing>
-    #         for i in range(20):
-    #             #gcMotorRequestQ.Push(i)
-    #             gcMotorRequestQ.Push(random.randint(5,30))
+            #<Testing>
+            # for i in range(20):
+            #     #gcMotorRequestQ.Push(i)
+            #     gcMotorRequestQ.Push(random.randint(5,30))
             
-    #         if( gpMotor.is_alive()  == False) : 
-    #             gpMotor = Process(target=Motor.CallingMotor, args=( gcMotorRequestQ,gCurrentStage))
-    #             gcMotorRequestQ.Clean() #reset
-    #             gpMotor.start()
-    # #strmRequest
-    #     if( strmRequest == True):
-    #         if( gpDetection.is_alive()  == True ) : #but detection is working now, turn off detection process
-    #                 gpDetection.terminate() 
-    #                 time.sleep(2) #neccessary, waiting Process died
+            if( gpMotor.is_alive()  == False) : 
+                gpMotor = Process(target=Motor.CallingMotor, args=( gcMotorRequestQ,gCurrentStage))
+                gcMotorRequestQ.Clean() #reset
+                gpMotor.start()
+    #strmRequest
+        if( strmRequest == True):
+            if( gpDetection.is_alive()  == True ) : #but detection is working now, turn off detection process
+                    gpDetection.terminate() 
+                    time.sleep(2) #neccessary, waiting Process died
         
     #detecting sleep
         if not (alarmTime < 0) : #alarm Control needed
@@ -170,5 +173,5 @@ if __name__ == '__main__':
 
         time.sleep(1)
 
- 
+ ####
 

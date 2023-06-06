@@ -13,11 +13,11 @@ import time
     현시스템에서는 모터제어 프로세스만 호출한다. 외부에서 사용하지 말것.'''
 class __cMotorManager() :
 
-    __outPins = [21,13,19,24]
+    __outPins = [21,13,19,26]
     __power = 21  #3.3V out
     __ena = 13
     __dir = 19
-    __clk = 24
+    __clk = 26
 
     __rpmSleep = 0.005
     __cycle = 6400
@@ -37,8 +37,8 @@ class __cMotorManager() :
             GPIO.cleanup(i)
         return
 
-    def RotatingMotor(self, cycles : int):   
-         
+    def RotatingMotor(self, cycles : int): 
+        print("rotating:",cycles)  
         if( cycles < 0 ) :
             GPIO.output(self.__dir, False)  #CCW
             cycles =  -cycles
@@ -60,7 +60,7 @@ class __cMotorManager() :
 @ret 
     -int : 모터를 동작시킬 사이클수'''
 def CalculatingTime(target : int , current : int ) -> int : 
-    resultTime =  (current+1) % 300
+    resultTime =  (target+1) % 3000
     return resultTime
 
 '''
@@ -85,7 +85,12 @@ def CallingMotor(requestQ : cQueue , currentStage : Value ):
 
         motor.RotatingMotor(cycles)
         tmpCurrentStage = nowTarget
-
+    del(motor)
     currentStage =  tmpCurrentStage #save
     print("ChildDead")
     return
+
+if __name__ == '__main__':
+    mm = __cMotorManager()
+    mm.RotatingMotor(1000)
+    mm.RotatingMotor(-1000)
