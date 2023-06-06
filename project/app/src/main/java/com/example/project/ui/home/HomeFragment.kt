@@ -1,5 +1,6 @@
 package com.example.project.ui.home
 
+import NetworkManager
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
@@ -12,6 +13,7 @@ import android.net.wifi.WifiManager
 import android.net.wifi.WifiNetworkSpecifier
 import android.os.Bundle
 import android.util.Log
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,7 +28,13 @@ import com.example.project.Profile
 import com.example.project.R
 import com.example.project.databinding.FragmentHomeBinding
 import com.example.project.ui.addprofile.AddProfileFragment.Companion.PROFILE_PREFS_KEY
-
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.IOException
+import java.net.InetAddress
+import java.net.Socket
 
 
 class HomeFragment : Fragment() {
@@ -94,22 +102,97 @@ class HomeFragment : Fragment() {
         }
 
         binding.trunOffButton.setOnClickListener {
-            packetViewModel.updateParameter2("1")
-            packetViewModel.logPacketData()
+            packetViewModel.updateParameter2("0")
+            packetViewModel.updateParameter3("10")
+            packetViewModel.updateParameter4("1")
             var resultPacket: Pair<Boolean, ByteArray> = packetViewModel.makePacketToSend()
             val isSuccess: Boolean = resultPacket.first
             val dataToSend: ByteArray = resultPacket.second
             Log.d("Packet", "Data: ${packetViewModel.parsingPacket(dataToSend)}")
 
+            if (isSuccess) {
+                sendPacketToServer(dataToSend)
+            } else {
+                Toast.makeText(requireContext(), "패킷 생성 실패", Toast.LENGTH_SHORT).show()
+            }
+
         }
+    }
+//    private var progressDialog: ProgressDialog? = null
+//    private fun sendPacketToServer(packetData: ByteArray) {
+//        val ipAddress = "10.42.0.1"
+//        val port = 7777
+//
+//        progressDialog = ProgressDialog(requireContext())
+//        progressDialog?.setMessage("로딩 중...") // 로딩 중 메시지 설정
+//        progressDialog?.setCancelable(false) // 취소 불가능 설정
+//        progressDialog?.show() // ProgressDialog 표시
+//
+//        CoroutineScope(Dispatchers.IO).launch {
+//            val networkManager = NetworkManager()
+//
+//            try {
+//                networkManager.setTCPServerSocket()
+//                networkManager.acceptConnection()
+//
+//                // Send packet data to the server
+//                networkManager.sendData(packetData)
+//
+//                val responsePacket = networkManager.receiveData()
+//                Log.d("Packet", "Response: ${packetViewModel.parsingPacket(responsePacket)}")
+//
+//                // Close the connection
+//                networkManager.close()
+//
+//                withContext(Dispatchers.Main) {
+//                    progressDialog?.dismiss() // ProgressDialog 숨기기
+//                    progressDialog = null // ProgressDialog 해제
+//                }
+//            } catch (e: IOException) {
+//                Log.e("HomeFragment", "Failed to send packet to the server: ${e.message}")
+//                withContext(Dispatchers.Main) {
+//                    Toast.makeText(requireContext(), "패킷 전송 실패", Toast.LENGTH_SHORT).show()
+//                    progressDialog?.dismiss() // ProgressDialog 숨기기
+//                    progressDialog = null // ProgressDialog 해제
+//                }
+//            }
+//        }
+//    }
+    private val networkManager = NetworkManager()
+    private fun sendPacketToServer(packetData: ByteArray) {
+        val ipAddress = "192.168.0.67"
+        val port = 7777
 
+        CoroutineScope(Dispatchers.IO).launch {
 
+            try {
+                networkManager.setTCPServerSocket()
+                networkManager.connectToServer(ipAddress, port)
 
+                // Send packet data to the server
+                networkManager.sendData(packetData)
 
+                val responsePacket = networkManager.receiveData()
+                Log.d("Response", "Response: ${packetViewModel.parsingPacket(responsePacket)}")
+
+                // Close the connection
+                networkManager.close()
+            } catch (e: IOException) {
+                Log.e("HomeFragment", "Failed to send packet to the server: ${e.message}")
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(requireContext(), "패킷 전송 실패", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
 
 
+        private var isRaspberryPiConnected = false
+
         private fun connectToRaspberryPiHotspot(context: Context) {
+            if (isRaspberryPiConnected) {
+                return // 이미 연결된 상태이면 함수를 종료합니다.
+            }
         val ssid = "rpi44" // 라즈베리파이 핫스팟의 SSID를 입력합니다.
         val password = "raspberry" // 라즈베리파이 핫스팟의 비밀번호를 입력합니다.
 
@@ -138,6 +221,7 @@ class HomeFragment : Fragment() {
                 if (!isAdded) return
 
                 requireActivity().runOnUiThread {
+                    isRaspberryPiConnected = true
                     Toast.makeText(context, "라즈베리파이 핫스팟에 연결되었습니다.", Toast.LENGTH_SHORT).show()
 
                     val sharedPreferences =
@@ -175,6 +259,11 @@ class HomeFragment : Fragment() {
             profileAlarmTextView.text = "알람 방식: ${it.alarmMode}"
         }
     }
+
+//    override fun onResume() {
+//        super.onResume()
+//        connectToRaspberryPiHotspot(requireActivity())
+//    }
 
     override fun onDestroyView() {
         super.onDestroyView()

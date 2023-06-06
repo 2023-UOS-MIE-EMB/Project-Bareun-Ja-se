@@ -55,11 +55,11 @@ class PacketViewModel : ViewModel() {
 
     fun makePacketToSend(): Pair<Boolean, ByteArray> {
         val jsonObject = JSONObject()
-        jsonObject.put("p0", p0)
-        jsonObject.put("p1", p1)
-        jsonObject.put("p2", p2)
-        jsonObject.put("p3", p3)
-        jsonObject.put("p4", p4)
+        jsonObject.put("0", p0)
+        jsonObject.put("1", p1)
+        jsonObject.put("2", p2)
+        jsonObject.put("3", p3)
+        jsonObject.put("4", p4)
 
         val packetBody = jsonObject.toString()
         val bodySize = packetBody.length
@@ -67,7 +67,7 @@ class PacketViewModel : ViewModel() {
         val packetHeader = "H:$bodySize"
 
         val dataToSend = "$packetHeader\r\n$packetBody\r\n\r\n".toByteArray(Charsets.UTF_8)
-        Log.d("dataToSend", "$packetHeader\r\n$packetBody\r\n\r\n")
+        //Log.d("dataToSend", "$packetHeader\r\n$packetBody\r\n\r\n")
 
 
         return true to dataToSend
