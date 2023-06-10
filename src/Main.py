@@ -68,31 +68,11 @@ def ShutingDown():
     ReapingResources()
     os.system("shutdown now")
 
-#for testing 
-__test = True
 
 if __name__ == '__main__':
 
-#Prior-Connect via HotSpot
-    if not (__test):
-        gNetWorkManager.turnonhotspot()
-        gNetWorkManager.settcpserversocket()
-
-        gNetWorkManager.listen()
-        gNetWorkManager.accept()
-        wifipacket = gNetWorkManager.recv()
-        wifidict =  gPacketManager.parsingpacket(wifipacket)
-        gNetWorkManager.close()
-
-        gNetWorkManager.setgeneralwifi(wifidict["8"],wifidict["9"])
-        gNetWorkManager.settcpserversocket()
-        gNetWorkManager.listen()
-        gNetWorkManager.accept()
-
-    #<\Test>
-    if (__test):
-        gNetWorkManager.SetTCPServerSocket()
-        gNetWorkManager.Listen()
+    gNetWorkManager.SetTCPServerSocket()
+    gNetWorkManager.Listen()
     
     while(1): 
         
@@ -167,10 +147,10 @@ if __name__ == '__main__':
                 print("StreamingError!")
                 exit()
 
-            #send Packet
-            if __debug__ :
-                print("senddata: " ,packet)
-            gNetWorkManager.SendAll(packet)
+        #send Packet
+        if __debug__ :
+            print("senddata: " ,packet)
+        gNetWorkManager.SendAll(packet)
 
         time.sleep(1)
 
