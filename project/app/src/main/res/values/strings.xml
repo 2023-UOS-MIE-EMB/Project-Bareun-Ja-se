@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">project</string>
+    <string name="title_home">홈</string>
+    <string name="title_heightcontroller">높이 조절</string>
+    <string name="title_alarmsetting">알람 설정</string>
+    <string-array name="alarm_types">
+        <item>진동</item>
+        <item>소리</item>
+        <item>진동 + 소리</item>
+        <item>무음</item>
+    </string-array>
+
+    <integer-array name="alarm_type_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </integer-array>
+</resources>
