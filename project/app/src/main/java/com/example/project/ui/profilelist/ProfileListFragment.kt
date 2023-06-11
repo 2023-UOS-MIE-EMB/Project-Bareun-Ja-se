@@ -1,8 +1,9 @@
 package com.example.project.ui.profilelist
 
+import NetworkManager
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,7 +11,6 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResult
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,14 +19,13 @@ import com.example.project.PacketViewModel
 import com.example.project.Profile
 import com.example.project.R
 import com.example.project.ui.addprofile.AddProfileFragment.Companion.PROFILE_PREFS_KEY
-import com.example.project.ui.home.HomeFragment
-import com.google.gson.Gson
 
 class ProfileListFragment : Fragment() {
 
     private lateinit var profileRecyclerView: RecyclerView
     private lateinit var profileAdapter: ProfileAdapter
     private var profileList: List<Profile> = emptyList()
+    private val networkManager = NetworkManager()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_profilelist, container, false)
@@ -120,9 +119,29 @@ class ProfileListFragment : Fragment() {
                         .show()
 
                     val packetViewModel = ViewModelProvider(requireActivity()).get(PacketViewModel::class.java)
-                    packetViewModel.updateParameter3(profile.alarmTime)  // 선택된 프로필 이름 패킷 인자로 할당
-                    packetViewModel.updateParameter4(profile.alarmMode)
-                    packetViewModel.logPacketData()
+                    if (profile.alarmTime == "미설정") {
+                        packetViewModel.updateParameter3("0")
+                    }else {
+                        packetViewModel.updateParameter3(profile.alarmTime)
+                    }
+
+                    if (profile.alarmMode == "진동") {
+                        packetViewModel.updateParameter4("1")
+                    } else if (profile.alarmMode == "소리") {
+                        packetViewModel.updateParameter4("2")
+                    } else if (profile.alarmMode == "미설정") {
+                        packetViewModel.updateParameter4("0")
+                    }
+                    var resultPacket: Pair<Boolean, ByteArray> = packetViewModel.makePacketToSend()
+                    val isSuccess: Boolean = resultPacket.first
+                    val dataToSend: ByteArray = resultPacket.second
+                    Log.d("Packet", "Data: ${packetViewModel.parsingPacket(dataToSend)}")
+
+                    if (isSuccess) {
+                        networkManager.sendPacketToServer(dataToSend, packetViewModel, requireContext())
+                    } else {
+                        Toast.makeText(requireContext(), "패킷 생성 실패", Toast.LENGTH_SHORT).show()
+                    }
 
                     val navController = findNavController()
                     navController.popBackStack(R.id.navigation_home, false)

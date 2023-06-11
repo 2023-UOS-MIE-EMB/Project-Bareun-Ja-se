@@ -1,8 +1,9 @@
 package com.example.project.ui.alarmsetting
 
+import NetworkManager
 import android.content.Context
-import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,6 +21,8 @@ import com.example.project.R
 class AlarmSettingFragment : Fragment() {
 
     private lateinit var packetViewModel: PacketViewModel
+    private val networkManager = NetworkManager()
+
 
     private var selectedAlarmMode: String? = null
     private var isAlarmOn: Boolean = false
@@ -60,8 +63,9 @@ class AlarmSettingFragment : Fragment() {
             }
         }
 
-        alarmSoundmodeButton.setOnClickListener { selectAlarmMode("소리") }
-        alarmVibemodeButton.setOnClickListener { selectAlarmMode("진동") }
+        alarmVibemodeButton.setOnClickListener { selectAlarmMode("진동") }     //진동
+        alarmSoundmodeButton.setOnClickListener { selectAlarmMode("소리") }    //소리
+
 
         saveButton.setOnClickListener {
             val sharedPreferences =
@@ -81,9 +85,28 @@ class AlarmSettingFragment : Fragment() {
                         saveProfile(requireContext(), it)
                         Toast.makeText(requireContext(), "알람 설정이 저장되었습니다.", Toast.LENGTH_SHORT)
                             .show()
-                        packetViewModel.updateParameter3(it.alarmTime)  // 알람 시간 패킷 인자로 할당
-                        packetViewModel.updateParameter4(it.alarmMode)
-                        packetViewModel.logPacketData()
+                        if (it.alarmTime == "미설정") {
+                            packetViewModel.updateParameter3("0")
+                        } else {
+                            packetViewModel.updateParameter3(it.alarmTime)
+                        }
+                        if (it.alarmMode == "진동") {
+                            packetViewModel.updateParameter4("1")
+                        } else if (it.alarmMode == "소리") {
+                            packetViewModel.updateParameter4("2")
+                        } else if (it.alarmMode == "미설정") {
+                            packetViewModel.updateParameter4("0")
+                        }
+                        var resultPacket: Pair<Boolean, ByteArray> = packetViewModel.makePacketToSend()
+                        val isSuccess: Boolean = resultPacket.first
+                        val dataToSend: ByteArray = resultPacket.second
+                        Log.d("Packet", "Data: ${packetViewModel.parsingPacket(dataToSend)}")
+
+                        if (isSuccess) {
+                            networkManager.sendPacketToServer(dataToSend, packetViewModel, requireContext())
+                        } else {
+                            Toast.makeText(requireContext(), "패킷 생성 실패", Toast.LENGTH_SHORT).show()
+                        }
                         findNavController().navigateUp()
                     }
                 }

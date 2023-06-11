@@ -1,6 +1,6 @@
 package com.example.project.ui.heightcontrolloer
 
-import android.content.Context
+import NetworkManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -16,6 +16,7 @@ import com.example.project.PacketViewModel
 class HeightControllerFragment : Fragment() {
 
     private lateinit var packetViewModel: PacketViewModel
+    private val networkManager = NetworkManager()
 
     private var _binding: FragmentHeightcontrollerBinding? = null
     private val binding get() = _binding!!
@@ -38,7 +39,17 @@ class HeightControllerFragment : Fragment() {
                 updateNowStepText()
                 binding.stepEdittext.text = null
                 packetViewModel.updateParameter0(currentStep.toString())
-                packetViewModel.logPacketData()
+//                packetViewModel.updateParameter3("-1")
+                var resultPacket: Pair<Boolean, ByteArray> = packetViewModel.makePacketToSend()
+                val isSuccess: Boolean = resultPacket.first
+                val dataToSend: ByteArray = resultPacket.second
+                Log.d("Packet", "Data: ${packetViewModel.parsingPacket(dataToSend)}")
+
+                if (isSuccess) {
+                    networkManager.sendPacketToServer(dataToSend, packetViewModel, requireContext())
+                } else {
+                    Toast.makeText(requireContext(), "패킷 생성 실패", Toast.LENGTH_SHORT).show()
+                }
             }
         }
 
@@ -46,14 +57,34 @@ class HeightControllerFragment : Fragment() {
             currentStep++
             updateNowStepText()
             packetViewModel.updateParameter0(currentStep.toString())
-            packetViewModel.logPacketData()
+//            packetViewModel.updateParameter3("-1")
+            var resultPacket: Pair<Boolean, ByteArray> = packetViewModel.makePacketToSend()
+            val isSuccess: Boolean = resultPacket.first
+            val dataToSend: ByteArray = resultPacket.second
+            Log.d("Packet", "Data: ${packetViewModel.parsingPacket(dataToSend)}")
+
+            if (isSuccess) {
+                networkManager.sendPacketToServer(dataToSend, packetViewModel, requireContext())
+            } else {
+                Toast.makeText(requireContext(), "패킷 생성 실패", Toast.LENGTH_SHORT).show()
+            }
         }
 
         binding.stepDownButton.setOnClickListener {
             currentStep--
             updateNowStepText()
             packetViewModel.updateParameter0(currentStep.toString())
-            packetViewModel.logPacketData()
+//            packetViewModel.updateParameter3("-1")
+            var resultPacket: Pair<Boolean, ByteArray> = packetViewModel.makePacketToSend()
+            val isSuccess: Boolean = resultPacket.first
+            val dataToSend: ByteArray = resultPacket.second
+            Log.d("Packet", "Data: ${packetViewModel.parsingPacket(dataToSend)}")
+
+            if (isSuccess) {
+                networkManager.sendPacketToServer(dataToSend, packetViewModel, requireContext())
+            } else {
+                Toast.makeText(requireContext(), "패킷 생성 실패", Toast.LENGTH_SHORT).show()
+            }
         }
 
         binding.saveButton.setOnClickListener {
@@ -94,15 +125,4 @@ class HeightControllerFragment : Fragment() {
         binding.nowStep.text = currentStep.toString()
     }
 
-    companion object {
-        private const val PROFILE_PREFS_KEY = "profile_prefs_key"
-
-        fun saveProfile(context: Context, profile: Profile) {
-            val sharedPreferences = context.getSharedPreferences(PROFILE_PREFS_KEY, Context.MODE_PRIVATE)
-            sharedPreferences.edit().apply {
-                putString(profile.name, profile.toJson())
-                commit()
-            }
-        }
-    }
 }

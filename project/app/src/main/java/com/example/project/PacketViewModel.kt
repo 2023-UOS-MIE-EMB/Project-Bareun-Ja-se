@@ -76,7 +76,6 @@ class PacketViewModel : ViewModel() {
     fun checkingHeader(packet: ByteArray): Pair<Int, String?> {
         val packetString = packet.decodeToString()
         val lines = packetString.lines()
-//        Log.d("lines", "$lines")
 
         val firstLine = lines.first()
         val headerSize = firstLine.length

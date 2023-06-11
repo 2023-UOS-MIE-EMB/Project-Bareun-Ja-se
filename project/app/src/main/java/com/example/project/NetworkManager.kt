@@ -1,4 +1,12 @@
+import android.app.ProgressDialog
+import android.content.Context
 import android.util.Log
+import android.widget.Toast
+import com.example.project.PacketViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
@@ -8,8 +16,9 @@ import java.net.Socket
 
 class NetworkManager {
 
-    private val serverPort = 7777
+    private val port = 7777
     private val maxBuf = 512
+    private val ipAddress = "192.168.0.68"
 
     private lateinit var serverSocket: ServerSocket
     private lateinit var clientSocket: Socket
@@ -18,7 +27,7 @@ class NetworkManager {
 
     fun setTCPServerSocket() {
         try {
-            serverSocket = ServerSocket(serverPort)
+            serverSocket = ServerSocket(port)
         } catch (e: IOException) {
             Log.e("NetworkManager", "Failed to make serverSocket: ${e.message}")
             throw e
@@ -26,7 +35,7 @@ class NetworkManager {
 
     }
 
-    fun connectToServer(ipAddress: String, port: Int) {
+    fun connectToServer() {
         try {
             val serverAddress = InetAddress.getByName(ipAddress)
             clientSocket = Socket(serverAddress, port)
@@ -58,6 +67,44 @@ class NetworkManager {
             throw e
         }
     }
+
+    fun sendPacketToServer(packetData: ByteArray, packetViewModel: PacketViewModel, context: Context) {
+            CoroutineScope(Dispatchers.IO).launch {
+                var progressDialog: ProgressDialog? = null
+
+                try {
+                    withContext(Dispatchers.Main) {
+                        // 진행 대화상자 표시
+                        progressDialog = ProgressDialog(context)
+                        progressDialog?.setMessage("로딩중...")
+                        progressDialog?.setCancelable(false)
+                        progressDialog?.show()
+                    }
+                    setTCPServerSocket()
+                    connectToServer()
+
+                    // Send packet data to the server
+                    sendData(packetData)
+
+                    val responsePacket = receiveData()
+                    Log.d("Response", "Response: ${packetViewModel.parsingPacket(responsePacket)}")
+
+                    // Close the connection
+                    close()
+                    withContext(Dispatchers.Main) {
+                        // 로딩 화면 닫기
+                        progressDialog?.dismiss()
+                    }
+                } catch (e: IOException) {
+                    Log.e("NetworkManager", "Failed to send packet to the server: ${e.message}")
+                    withContext(Dispatchers.Main) {
+                        progressDialog?.dismiss()
+                        Toast.makeText(context, "패킷 전송 실패", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+    }
+
 
     fun close() {
         clientSocket.close()

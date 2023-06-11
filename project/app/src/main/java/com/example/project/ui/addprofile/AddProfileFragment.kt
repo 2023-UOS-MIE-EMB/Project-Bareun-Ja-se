@@ -1,9 +1,7 @@
 package com.example.project.ui.addprofile
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +13,6 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.project.R
 import com.example.project.Profile
-import com.example.project.ui.profilelist.ProfileListFragment
 
 
 class AddProfileFragment : Fragment() {
@@ -42,8 +39,8 @@ class AddProfileFragment : Fragment() {
         alarmVibemodeButton.isEnabled = false
         profileAlarmTimeEditText.isEnabled = false
 
-        alarmSoundmodeButton.setOnClickListener { selectAlarmMode("소리") }
-        alarmVibemodeButton.setOnClickListener { selectAlarmMode("진동") }
+        alarmVibemodeButton.setOnClickListener { selectAlarmMode("진동") }     // 진동
+        alarmSoundmodeButton.setOnClickListener { selectAlarmMode("소리") }    // 소리
 
         val addProfileButton = view.findViewById<Button>(R.id.addProfileButton)
 
