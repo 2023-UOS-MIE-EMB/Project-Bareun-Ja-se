@@ -129,7 +129,7 @@ if __name__ == '__main__':
                 
             if not (alarmMode == 0) :  #need detection
                 # hostip = gNetWorkManager.GethostIP()
-                hostip = '10.42.0.1' #rpihotspotcode
+                hostip = gNetWorkManager.GethostIP() 
                 gStreamingAddr = utils.ConcatStr(hostip,[':5000','/vid'])
                 gFace_detector = cFaceDetector(alarm_mode = alarmMode,alarm_time = alarmTime)
                 if(strmRequest==True):
