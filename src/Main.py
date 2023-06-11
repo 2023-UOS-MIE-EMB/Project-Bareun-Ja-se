@@ -130,7 +130,7 @@ if __name__ == '__main__':
             if not (alarmMode == 0) :  #need detection
                 # hostip = gNetWorkManager.GethostIP()
                 hostip = gNetWorkManager.GethostIP() 
-                gStreamingAddr = utils.ConcatStr(hostip,[':5000','/vid'])
+                gStreamingAddr = utils.ConcatStr('https://',[hostip,':5000','/vid'])
                 gFace_detector = cFaceDetector(alarm_mode = alarmMode,alarm_time = alarmTime)
                 if(strmRequest==True):
                     gpDetection = Process(target=gpApp.run, kwargs={"host":hostip,"port":'5000',"debug":False, "threaded":True})
