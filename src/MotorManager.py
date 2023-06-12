@@ -45,6 +45,8 @@ class __cMotorManager() :
         else : 
             GPIO.output(self.__dir, True)  #CW
 
+        cycles = cycles * 100
+
         for i in range(cycles):
             GPIO.output(self.__clk, True)   
             time.sleep(self.__rpmSleep)
@@ -60,8 +62,8 @@ class __cMotorManager() :
 @ret 
     -int : 모터를 동작시킬 사이클수'''
 def CalculatingTime(target : int , current : int ) -> int : 
-    resultTime =  (target+1) 
-    return resultTime
+    result =  (target - current)
+    return result
 
 '''
 @기능
@@ -73,23 +75,32 @@ def CalculatingTime(target : int , current : int ) -> int :
     -currentStage : 모터의 현재단계. 다른 프로세스와 공유가능한 값이다. 요청 처리 후 바뀐다.'''
 def CallingMotor(requestQ : cQueue , currentStage : Value ):
 
+    minStage = 1
+    maxStage =20 
+
     motor = __cMotorManager()
     tmpCurrentStage = currentStage.value
     print("child")
-    requestQ.PrintAll()
+    if __debug__ :
+        requestQ.PrintAll()
     while not (requestQ.IsEmpty()):
         nowTarget = requestQ.Pop()
+        if(nowTarget < minStage ): 
+            continue
+        nowTarget = min(nowTarget,maxStage) 
         
         #</Testing
-        print( " child : " , nowTarget)
+        if __debug__ :
+            requestQ.PrintAll()
+            print( " child : " , nowTarget)
         #/>
         cycles = CalculatingTime(nowTarget, tmpCurrentStage)
 
         motor.RotatingMotor(cycles)
         tmpCurrentStage = nowTarget
     del(motor)
-    currentStage =  tmpCurrentStage #save
-    print("ChildDead")
+    currentStage.value =  tmpCurrentStage #save
+    print("ChildDead, CurrentStage :", currentStage.value)
     return
 
 if __name__ == '__main__':

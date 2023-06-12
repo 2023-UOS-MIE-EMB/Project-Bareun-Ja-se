@@ -19,7 +19,7 @@ gMAXBUF = 512
 #global_motor
 gpMotor = Process()
 gcMotorRequestQ = cQueue()      
-gCurrentStage = Value('i',0)                    #base value,
+gCurrentStage = Value('i',1)                    #base value,
 
 #global_detection
 gpApp : Flask = Flask(__name__)
@@ -87,7 +87,7 @@ if __name__ == '__main__':
         targetStage = int(packetResults["0"])
         strmRequest = int(packetResults["1"])
         print(strmRequest)
-        alarmTime = int(packetResults["3"])
+        alarmTime = int(packetResults["3"]) * 60  #min to sec
         alarmMode = int(packetResults["4"])
         isShutdown = int(packetResults["2"])
         
