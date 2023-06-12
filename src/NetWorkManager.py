@@ -23,7 +23,7 @@ class cNetWorkManager():
     __ClientSocket  : socket.socket = socket.socket()
     __ClientAddr = None
 
-    __host = "127.0.0.1" #loopback
+    __host = "192.168.0.67" #loopback
     __port = 7777
 
     __maxBuf = 512
@@ -97,6 +97,7 @@ if __name__ == '__main__':
         network.Listen()
         network.Accept()
         buf = network.Recv()
+
         print(buf)
 
         network.Close()
