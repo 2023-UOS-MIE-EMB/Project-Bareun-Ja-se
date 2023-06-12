@@ -42,7 +42,7 @@ class cFaceDetector:
         self.__FrameWidth       = frame_width
         self.__FrameHeight      = frame_height
        
-        self.__AlarmTime        = alarm_time*60        
+        self.__AlarmTime        = alarm_time       
         self.__AlarmMode        = alarm_mode
     
     '''
@@ -52,7 +52,7 @@ class cFaceDetector:
         Tuple[int,int] : [실행시간,휴식시간] '''
     def __SetExTimers(self) -> Tuple[int,int]:
         WorkingTime = int(self.__AlarmTime *2)
-        SleepingTime = int(self.__AlarmTime/2)
+        SleepingTime = int(self.__AlarmTime/5)
         
         return WorkingTime, SleepingTime
     
@@ -74,7 +74,6 @@ class cFaceDetector:
         #<\test>
         # WorkingTime = 30
         # SleepingTime = 0
-        self.__AlarmMode = 0
         while(True):
             nowTime =  time.time()
             if((nowTime - StartWorkingTime) >= WorkingTime) :
@@ -85,7 +84,7 @@ class cFaceDetector:
                 time.sleep(SleepingTime)
                 StartWorkingTime = time.time()
             else:    
-                if((nowTime - RecentTime) > 10 and userState == 0):
+                if((nowTime - RecentTime) > self.__AlarmTime and userState == 0):
                     #ring bell
                     if __debug__:
                         print("ring bell")

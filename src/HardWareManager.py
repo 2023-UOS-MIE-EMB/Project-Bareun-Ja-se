@@ -8,12 +8,12 @@ import time
 class cHardWareManager :
     __outPins = [12,23,24,18]
     __led = 12
-    __speaker = 23
-    __buzzer =  24
+    __speaker = 24
+    __buzzer =  23
     __pwm = 18
 
-    __modeBuzzer = 1 << 0    
-    __modeSpeaker = 1 << 1    
+    __modeBuzzer = 1    
+    __modeSpeaker =2 
     __modeBoth = __modeBuzzer | __modeSpeaker  
 
     pwmObj = None
@@ -103,7 +103,7 @@ class cHardWareManager :
         -alarmMode : 비트마스킹 알람 모드, ([스피커][부저])
         -workingTime : 알람이 울리는 시간 '''
     def RingFromMode(self, alarmMode : int, workingTime : int) :
-
+        print("alarmMode : ", alarmMode)
         if(alarmMode == self.__modeBuzzer):
             self.RingBuzzer(workingTime)
         elif(alarmMode == self.__modeSpeaker):

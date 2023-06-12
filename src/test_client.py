@@ -12,11 +12,11 @@ tcp_socket = socket.create_connection(('localhost', 7777))
 #3:altm time
 #4:arlm mode
 try:
-    sendingContent = {  "0" : "1000",
+    sendingContent = {  "0" : "1",
                         "1" : "0", 
                         "2" : "0",
-                        "3" : "100",
-                        "4" : "0"}
+                        "3" : "10",
+                        "4" : "2"}
     result, packet = PacketManager.MakingPacketToSend(sendingContent)
     print(packet)
     parsingresult = PacketManager.ParsingPacket(packet)
