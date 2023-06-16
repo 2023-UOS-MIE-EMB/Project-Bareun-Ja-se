@@ -54,7 +54,7 @@ class cFaceDetector:
         WorkingTime = int(self.__AlarmTime *2)
         SleepingTime = int(self.__AlarmTime/5)
         
-        return WorkingTime, SleepingTime
+        return WorkingTime, 0
     
     def dectecing_face_alarm(self):
         print("time:", self.__AlarmTime)
@@ -123,8 +123,8 @@ class cFaceDetector:
                     if(userState != nowState):
                         userState = nowState   #state 판단 내리고 바뀔때만 초기화
                         RecentTime = time.time()
-                    if __debug__ : 
-                        cv2.imshow("face",FrameForFaceDetect)
+                    #if __debug__ : 
+                        #cv2.imshow("face",FrameForFaceDetect)
         del(Camera)
 
     def detecting_face_for_streaming(self):
@@ -156,7 +156,7 @@ class cFaceDetector:
                     cv2.rectangle(RawFrame,(x,y),(w,h),(50,200,0),2)
 
                 UserStatus = 'Detected'
-                StatusColor = (0, 255, 0)
+                self.__StatusColor = (0, 255, 0)
                 cv2.putText(RawFrame, UserStatus , (10,30), cv2.FONT_HERSHEY_DUPLEX, 1, self.__StatusColor, 2)
 
             _, buffer = cv2.imencode('.jpg', RawFrame)

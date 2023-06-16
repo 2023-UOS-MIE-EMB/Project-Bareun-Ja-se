@@ -20,18 +20,18 @@ GPIO.setup(ena, GPIO.OUT,initial=True)
 GPIO.setup(clk, GPIO.OUT,initial=True)
 
 while(1):
-    GPIO.output(dir, True)
-    print(GPIO.input(dir))
-    for i in range(3000):
-        GPIO.output(clk, True)   
-        time.sleep(0.001)
-        GPIO.output(clk, False)    
-        time.sleep(0.001)
-    # GPIO.output(dir,False )
+    # GPIO.output(dir, True)
     # print(GPIO.input(dir))
     # for i in range(3000):
-    #     GPIO.output(clk,True)
+    #     GPIO.output(clk, True)   
     #     time.sleep(0.001)
     #     GPIO.output(clk, False)    
     #     time.sleep(0.001)
+    GPIO.output(dir,False )
+    print(GPIO.input(dir))
+    for i in range(3000):
+        GPIO.output(clk,True)
+        time.sleep(0.001)
+        GPIO.output(clk, False)    
+        time.sleep(0.001)
          

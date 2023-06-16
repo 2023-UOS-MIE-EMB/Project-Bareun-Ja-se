@@ -1,7 +1,7 @@
 import RPi.GPIO as GPIO
 import time
 
-vccs = [24, 27]
+vccs = [23, 24]
 pwm = 18   # In과 연결된 GPIO 번호
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(pwm, GPIO.OUT,initial=False)

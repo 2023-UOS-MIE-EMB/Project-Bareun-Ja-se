@@ -4,7 +4,7 @@ import socket
  
 
 PacketManager = cPacketManager()
-tcp_socket = socket.create_connection(('localhost', 7777))
+tcp_socket = socket.create_connection(('192.168.0.67', 7777))
 
 #0:angle
 #1:strmrq
@@ -15,7 +15,7 @@ try:
     sendingContent = {  "0" : "1",
                         "1" : "0", 
                         "2" : "0",
-                        "3" : "10",
+                        "3" : "1",
                         "4" : "2"}
     result, packet = PacketManager.MakingPacketToSend(sendingContent)
     print(packet)

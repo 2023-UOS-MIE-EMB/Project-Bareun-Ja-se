@@ -24,6 +24,8 @@ class cNetWorkManager():
     __ClientAddr = None
 
     __host = "192.168.0.67" #loopback
+    # __host = "127.0.0.1" #loopback
+
     __port = 7777
 
     __maxBuf = 512

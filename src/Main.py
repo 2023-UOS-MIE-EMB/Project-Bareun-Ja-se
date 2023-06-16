@@ -68,6 +68,8 @@ def ShutingDown():
     ReapingResources()
     os.system("shutdown now")
 
+    #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
+
 
 if __name__ == '__main__':
 
@@ -87,7 +89,7 @@ if __name__ == '__main__':
         targetStage = int(packetResults["0"])
         strmRequest = int(packetResults["1"])
         print(strmRequest)
-        alarmTime = int(packetResults["3"]) * 60  #min to sec
+        alarmTime = int(packetResults["3"]) #* 60  #min to sec
         alarmMode = int(packetResults["4"])
         isShutdown = int(packetResults["2"])
         
