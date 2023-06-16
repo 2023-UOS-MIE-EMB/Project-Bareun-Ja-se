@@ -35,11 +35,33 @@ class HeightControllerFragment : Fragment() {
         binding.stepInputButton.setOnClickListener {
             val inputText = binding.stepEdittext.text.toString()
             if (inputText.isNotEmpty()) {
-                currentStep = inputText.toInt()
+                val step = inputText.toIntOrNull()
+                if (step != null && step in 1..20) {
+                    currentStep = step
+                    updateNowStepText()
+                    binding.stepEdittext.text = null
+                    packetViewModel.updateParameter0(currentStep.toString())
+                    var resultPacket: Pair<Boolean, ByteArray> = packetViewModel.makePacketToSend()
+                    val isSuccess: Boolean = resultPacket.first
+                    val dataToSend: ByteArray = resultPacket.second
+                    Log.d("Packet", "Data: ${packetViewModel.parsingPacket(dataToSend)}")
+
+                    if (isSuccess) {
+                        networkManager.sendPacketToServer(dataToSend, packetViewModel, requireContext())
+                    } else {
+                        Toast.makeText(requireContext(), "패킷 생성 실패", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    Toast.makeText(requireContext(), "입력 값은 1에서 20 사이로 입력해주세요.", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
+        binding.stepUpButton.setOnClickListener {
+            if (currentStep < 20) {
+                currentStep++
                 updateNowStepText()
-                binding.stepEdittext.text = null
                 packetViewModel.updateParameter0(currentStep.toString())
-//                packetViewModel.updateParameter3("-1")
                 var resultPacket: Pair<Boolean, ByteArray> = packetViewModel.makePacketToSend()
                 val isSuccess: Boolean = resultPacket.first
                 val dataToSend: ByteArray = resultPacket.second
@@ -53,37 +75,21 @@ class HeightControllerFragment : Fragment() {
             }
         }
 
-        binding.stepUpButton.setOnClickListener {
-            currentStep++
-            updateNowStepText()
-            packetViewModel.updateParameter0(currentStep.toString())
-//            packetViewModel.updateParameter3("-1")
-            var resultPacket: Pair<Boolean, ByteArray> = packetViewModel.makePacketToSend()
-            val isSuccess: Boolean = resultPacket.first
-            val dataToSend: ByteArray = resultPacket.second
-            Log.d("Packet", "Data: ${packetViewModel.parsingPacket(dataToSend)}")
-
-            if (isSuccess) {
-                networkManager.sendPacketToServer(dataToSend, packetViewModel, requireContext())
-            } else {
-                Toast.makeText(requireContext(), "패킷 생성 실패", Toast.LENGTH_SHORT).show()
-            }
-        }
-
         binding.stepDownButton.setOnClickListener {
-            currentStep--
-            updateNowStepText()
-            packetViewModel.updateParameter0(currentStep.toString())
-//            packetViewModel.updateParameter3("-1")
-            var resultPacket: Pair<Boolean, ByteArray> = packetViewModel.makePacketToSend()
-            val isSuccess: Boolean = resultPacket.first
-            val dataToSend: ByteArray = resultPacket.second
-            Log.d("Packet", "Data: ${packetViewModel.parsingPacket(dataToSend)}")
+            if (currentStep > 1) {
+                currentStep--
+                updateNowStepText()
+                packetViewModel.updateParameter0(currentStep.toString())
+                var resultPacket: Pair<Boolean, ByteArray> = packetViewModel.makePacketToSend()
+                val isSuccess: Boolean = resultPacket.first
+                val dataToSend: ByteArray = resultPacket.second
+                Log.d("Packet", "Data: ${packetViewModel.parsingPacket(dataToSend)}")
 
-            if (isSuccess) {
-                networkManager.sendPacketToServer(dataToSend, packetViewModel, requireContext())
-            } else {
-                Toast.makeText(requireContext(), "패킷 생성 실패", Toast.LENGTH_SHORT).show()
+                if (isSuccess) {
+                    networkManager.sendPacketToServer(dataToSend, packetViewModel, requireContext())
+                } else {
+                    Toast.makeText(requireContext(), "패킷 생성 실패", Toast.LENGTH_SHORT).show()
+                }
             }
         }
 
