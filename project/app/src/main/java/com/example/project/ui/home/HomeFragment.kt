@@ -90,7 +90,7 @@ class HomeFragment : Fragment() {
         }
 
         binding.trunOffButton.setOnClickListener {
-            packetViewModel.updateParameter2("0")   // 마지막에 1 로 고쳐야함
+            packetViewModel.updateParameter2("1")   // 마지막에 1 로 고쳐야함
             var resultPacket: Pair<Boolean, ByteArray> = packetViewModel.makePacketToSend()
             val isSuccess: Boolean = resultPacket.first
             val dataToSend: ByteArray = resultPacket.second
@@ -105,7 +105,10 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun sendPacketBasedOnSelectedProfile(profile: Profile) {
+    fun sendPacketBasedOnSelectedProfile(profile: Profile) {
+        if (profile.optimalStep != "미설정") {
+            packetViewModel.updateParameter0(profile.optimalStep)
+        }
         packetViewModel.updateParameter1("0")
         packetViewModel.updateParameter2("0")
         if (profile.alarmTime == "미설정") {

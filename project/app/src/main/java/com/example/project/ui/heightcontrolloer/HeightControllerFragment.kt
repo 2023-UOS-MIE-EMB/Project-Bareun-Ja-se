@@ -1,6 +1,7 @@
 package com.example.project.ui.heightcontrolloer
 
 import NetworkManager
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,7 +12,10 @@ import androidx.fragment.app.Fragment
 import com.example.project.Profile
 import com.example.project.databinding.FragmentHeightcontrollerBinding
 import androidx.lifecycle.ViewModelProvider
+import com.example.project.FirstLaunch
 import com.example.project.PacketViewModel
+import com.example.project.SharedData
+import com.example.project.ui.addprofile.AddProfileFragment
 
 class HeightControllerFragment : Fragment() {
 
@@ -31,6 +35,27 @@ class HeightControllerFragment : Fragment() {
         _binding = FragmentHeightcontrollerBinding.inflate(inflater, container, false)
 
         packetViewModel = ViewModelProvider(requireActivity()).get(PacketViewModel::class.java)
+
+        val sharedPreferences = requireContext().getSharedPreferences(AddProfileFragment.PROFILE_PREFS_KEY, Context.MODE_PRIVATE)
+        val selectedProfileName = sharedPreferences.getString("selected_profile", null)
+        if (selectedProfileName != null) {
+            val profileJson = sharedPreferences.getString(selectedProfileName, null)
+            if (profileJson != null) {
+                val selectedProfile = Profile.fromJson(profileJson)
+                if (SharedData.firstLaunch.heightFirstLaunch && selectedProfile != null) {
+                    if (selectedProfile.optimalStep != "미설정") {
+                        Log.d("dddddddddd","ddddddddddddddddddddddddddddddddd")
+                        currentStep = selectedProfile.optimalStep.toInt()
+                    }
+                    else{
+                        currentStep = 0
+                        Log.d("cccccccccccccc","ccccccccccccccccccccccccccccc")
+                    }
+                    SharedData.firstLaunch.heightFirstLaunch = false
+                }
+                updateNowStepText()
+            }
+        }
 
         binding.stepInputButton.setOnClickListener {
             val inputText = binding.stepEdittext.text.toString()
@@ -109,10 +134,10 @@ class HeightControllerFragment : Fragment() {
             }
         }
 
-        if (savedInstanceState != null) {
-            currentStep = savedInstanceState.getInt("currentStep", 0)
-            updateNowStepText()
-        }
+//        if (savedInstanceState != null) {
+//            currentStep = savedInstanceState.getInt("currentStep", 0)
+//            updateNowStepText()
+//        }
 
         return binding.root
     }
@@ -129,6 +154,7 @@ class HeightControllerFragment : Fragment() {
 
     private fun updateNowStepText() {
         binding.nowStep.text = currentStep.toString()
+        binding.nowStep.invalidate()
     }
 
 }
