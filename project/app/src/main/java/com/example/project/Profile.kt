@@ -6,7 +6,7 @@ data class Profile(
     var name: String,
     var alarmTime: String,
     var alarmMode: String,
-    var optimalStep: String? = null,
+    var optimalStep: String
 ) {
     fun toJson(): String {
         return Gson().toJson(this)

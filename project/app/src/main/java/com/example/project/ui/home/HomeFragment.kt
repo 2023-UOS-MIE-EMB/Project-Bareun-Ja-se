@@ -86,21 +86,11 @@ class HomeFragment : Fragment() {
         }
 
         binding.cameraOuputButton.setOnClickListener {
-            packetViewModel.updateParameter1("0")   // 마지막에 1 로 고쳐야함
-            var resultPacket: Pair<Boolean, ByteArray> = packetViewModel.makePacketToSend()
-            val isSuccess: Boolean = resultPacket.first
-            val dataToSend: ByteArray = resultPacket.second
-            Log.d("Packet", "Data: ${packetViewModel.parsingPacket(dataToSend)}")
-            if (isSuccess) {
-                networkManager.sendPacketToServer(dataToSend, packetViewModel, requireContext())
-
-            } else {
-                Toast.makeText(requireContext(), "패킷 생성 실패", Toast.LENGTH_SHORT).show()
-            }
+            findNavController().navigate(R.id.action_homeFragment_to_streamingFragment)
         }
 
         binding.trunOffButton.setOnClickListener {
-            packetViewModel.updateParameter2("0")   // 마지막에 1 로 고쳐야함
+            packetViewModel.updateParameter2("1")   // 마지막에 1 로 고쳐야함
             var resultPacket: Pair<Boolean, ByteArray> = packetViewModel.makePacketToSend()
             val isSuccess: Boolean = resultPacket.first
             val dataToSend: ByteArray = resultPacket.second
@@ -115,7 +105,10 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun sendPacketBasedOnSelectedProfile(profile: Profile) {
+    fun sendPacketBasedOnSelectedProfile(profile: Profile) {
+        if (profile.optimalStep != "미설정") {
+            packetViewModel.updateParameter0(profile.optimalStep)
+        }
         packetViewModel.updateParameter1("0")
         packetViewModel.updateParameter2("0")
         if (profile.alarmTime == "미설정") {

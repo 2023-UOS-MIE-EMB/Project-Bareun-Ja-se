@@ -15,10 +15,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.project.PacketViewModel
-import com.example.project.Profile
-import com.example.project.R
+import com.example.project.*
 import com.example.project.ui.addprofile.AddProfileFragment.Companion.PROFILE_PREFS_KEY
+import com.example.project.ui.heightcontrolloer.HeightControllerFragment
 
 class ProfileListFragment : Fragment() {
 
@@ -26,6 +25,7 @@ class ProfileListFragment : Fragment() {
     private lateinit var profileAdapter: ProfileAdapter
     private var profileList: List<Profile> = emptyList()
     private val networkManager = NetworkManager()
+
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_profilelist, container, false)
@@ -119,6 +119,14 @@ class ProfileListFragment : Fragment() {
                         .show()
 
                     val packetViewModel = ViewModelProvider(requireActivity()).get(PacketViewModel::class.java)
+
+                    Log.d("sssssssssssssss", SharedData.firstLaunch.heightFirstLaunch.toString())
+                    SharedData.firstLaunch.heightFirstLaunch = true
+
+                    if (profile.optimalStep != "미설정") {
+                        packetViewModel.updateParameter0(profile.optimalStep)
+                    }
+
                     if (profile.alarmTime == "미설정") {
                         packetViewModel.updateParameter3("0")
                     }else {
