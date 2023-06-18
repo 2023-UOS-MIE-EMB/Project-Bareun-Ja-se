@@ -5,13 +5,13 @@ import socket
 
 PacketManager = cPacketManager()
 
-tcp_socket = socket.create_connection(('localhost', 7777))
+tcp_socket = socket.create_connection(('192.168.0.3', 7777))
  
 try:
-    sendingContent = {  "0" : "-1000",
+    sendingContent = {  "0" : "1",
                         "1" : "0", 
                         "2" : "0",
-                        "3" : "100",
+                        "3" : "0",
                         "4" : "0"}
     result, packet = PacketManager.MakingPacketToSend(sendingContent)
     print(packet)

@@ -45,6 +45,9 @@ class cFaceDetector:
         self.__AlarmTime        = alarm_time       
         self.__AlarmMode        = alarm_mode
     
+    def GetHWmanager(self):
+        return self.__HardWareManager
+
     '''
     @기능
         face_detecting에서 동작시간과 휴식시간을 리턴한다.
@@ -79,10 +82,11 @@ class cFaceDetector:
             if((nowTime - StartWorkingTime) >= WorkingTime) :
                 if __debug__:
                     print("sleeping")
-
-                self.__HardWareManager.resetAll()
-                time.sleep(SleepingTime)
                 StartWorkingTime = time.time()
+                continue
+                # self.__HardWareManager.resetAll()
+                # time.sleep(SleepingTime)
+                # StartWorkingTime = time.time()
             else:    
                 if((nowTime - RecentTime) > self.__AlarmTime and userState == 0):
                     #ring bell

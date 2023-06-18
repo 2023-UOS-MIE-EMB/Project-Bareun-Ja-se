@@ -42,20 +42,21 @@ gNetWorkManager = cNetWorkManager(Hssid="rpi42",maxBuf=512)
 @기능 
     자원 회수 기능을 한다.'''
 def ReapingResources():
+    global gpMotor,gpDetection, gNetWorkManager, gcMotorRequestQ
+    while(gpMotor.is_alive()== True):
+        time.sleep(0.5)
 
-    while(gpMotor.is_alive() ==  False):
+    if(gpMotor.is_alive() ==  False):
         gcMotorRequestQ.Clean() #reset
-        gcMotorRequestQ.Push(0) #초기단계로 모터 되돌리기 -> 현재각도값 저장대신 이게 나을지도? 종료될때 최대한 접히는게 보관도 용이할듯
+        gcMotorRequestQ.Push(1) #초기단계로 모터 되돌리기 -> 현재각도값 저장대신 이게 나을지도? 종료될때 최대한 접히는게 보관도 용이할듯
         gpMotor = Process(target=Motor.CallingMotor, args=( gcMotorRequestQ,gCurrentStage))
         gpMotor.start()
+        gpMotor.join()
 
-    gpMotor.join()
-
-    if( gpDetection.is_alive()  == True ) :
-        print("kill")
-        gpDetection.terminate() 
-        time.sleep(2) #neccessary, waiting Process died
-     
+    if(gpDetection.is_alive() == True):
+        gpDetection.terminate()
+        gpDetection.join() 
+   
     gNetWorkManager.__ClientSocket.close()
     gNetWorkManager.__ServerSocket.close()
 
@@ -78,7 +79,15 @@ if __name__ == '__main__':
     
     while(1): 
         
-        gNetWorkManager.Accept()
+        if not (gNetWorkManager.Accept()):
+            if not (gcMotorRequestQ.IsEmpty()):
+                if( gpMotor.is_alive()  == False) : 
+                    gpMotor = Process(target=Motor.CallingMotor, args=( gcMotorRequestQ,gCurrentStage))
+                    gpMotor.start()
+                    gcMotorRequestQ.Clean() #reset
+
+            continue  
+
         recvedPacket = gNetWorkManager.Recv()
 
         packetResults = gPacketManager.ParsingPacket(recvedPacket)
@@ -96,9 +105,9 @@ if __name__ == '__main__':
         for key,value in packetResults.items():
             print(key,":", value)
 
-    # #power controll
-    #     if(isShutdown):
-    #         ShutingDown()
+    #power controll
+        if(isShutdown):
+            ShutingDown()
 
     #motor
         if not ( targetStage == -1) : 
@@ -126,6 +135,7 @@ if __name__ == '__main__':
         if not (alarmTime < 0) : #alarm Control needed
             if( gpDetection.is_alive()  == True ) : #detection is working now, turn off detection process
                     gStreamingAddr = gBaseStreamAddr
+                    gFace_detector.GetHWmanager().resetAll()
                     gpDetection.terminate() 
                     time.sleep(2) #neccessary, waiting Process died
                 
@@ -142,7 +152,7 @@ if __name__ == '__main__':
                 gpDetection.start()
     
             NowStreamingAddr = gStreamingAddr
-            sendingData = {"5" : NowStreamingAddr}
+            sendingData = {"5" : NowStreamingAddr , "6" : gCurrentStage.value }
             result , packet = gPacketManager.MakingPacketToSend(sendingData)
 
             if(result == False) : 

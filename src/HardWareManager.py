@@ -30,8 +30,8 @@ class cHardWareManager :
         return
 
     def __del__(self):
+        self.resetAll()
         for i in self.__outPins:
-            GPIO.output(i, False)
             GPIO.cleanup(i)
         return
     '''
@@ -51,7 +51,7 @@ class cHardWareManager :
         if (status == True):
             self.pwmObj.start(50.0)
             if __debug__:
-                print("buzzer")
+                print("speaker")
             GPIO.output(self.__buzzer, False)
             GPIO.output(self.__speaker, True)
             self.pwmObj.ChangeFrequency(200) 
@@ -101,13 +101,13 @@ class cHardWareManager :
         bitmask AlarmMode에 따라 스피커와 부저 제어
     @인자
         -alarmMode : 비트마스킹 알람 모드, ([스피커][부저])
-        -workingTime : 알람이 울리는 시간 '''
-    def RingFromMode(self, alarmMode : int, workingTime : int) :
+        -action : 알람이 여부 '''
+    def RingFromMode(self, alarmMode : int, action : bool) :
         print("alarmMode : ", alarmMode)
         if(alarmMode == self.__modeBuzzer):
-            self.RingBuzzer(workingTime)
+            self.RingBuzzer(action)
         elif(alarmMode == self.__modeSpeaker):
-            self.RingSpeaker(workingTime)
+            self.RingSpeaker(action)
         #elif(alarmMode == self.__modeBoth):
         else:
             print("wrong Mode!")

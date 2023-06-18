@@ -13,11 +13,14 @@ def led(pin, t):
 
 #led(17, 5)  
 
-pin = 17
+pin = 12
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(pin, GPIO.OUT)
+GPIO.setwarnings(False)
 
 while(1):
-	GPIO.output(pin, True)
-	time.sleep(2)
-	GPIO.output(pin, False)
+    GPIO.output(pin, True)
+    time.sleep(1)
+    GPIO.output(pin, False)
+    time.sleep(1)
+

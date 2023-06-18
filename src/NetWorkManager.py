@@ -23,7 +23,7 @@ class cNetWorkManager():
     __ClientSocket  : socket.socket = socket.socket()
     __ClientAddr = None
 
-    __host = "192.168.0.67" #loopback
+    __host = "192.168.0.4" #loopback
     # __host = "127.0.0.1" #loopback
 
     __port = 7777
@@ -69,9 +69,13 @@ class cNetWorkManager():
     def Listen(self):
         self.__ServerSocket.listen()
 
-    def Accept(self): 
-        self.__ClientSocket, self.__ClientAddr = self.__ServerSocket.accept()
-
+    def Accept(self) -> bool: 
+        try :
+            self.__ServerSocket.settimeout(1)
+            self.__ClientSocket, self.__ClientAddr = self.__ServerSocket.accept()
+            return True
+        except socket.error :
+            return False
     def Recv(self) -> bytes :
         buf =  self.__ClientSocket.recv(self.__maxBuf)
         return buf
