@@ -7,6 +7,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.json.JSONObject
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
@@ -18,12 +19,14 @@ class NetworkManager {
 
     private val port = 7777
     private val maxBuf = 512
-    private val ipAddress = "192.168.0.67"
+    private val ipAddress = "192.168.0.3"
 
     private lateinit var serverSocket: ServerSocket
     private lateinit var clientSocket: Socket
     private lateinit var outputStream: OutputStream
     private lateinit var inputStream: InputStream
+
+
 
     fun setTCPServerSocket() {
         try {
@@ -68,7 +71,11 @@ class NetworkManager {
         }
     }
 
-    fun sendPacketToServer(packetData: ByteArray, packetViewModel: PacketViewModel, context: Context) {
+    fun sendPacketToServer(
+        packetData: ByteArray,
+        packetViewModel: PacketViewModel,
+        context: Context
+    ) {
         CoroutineScope(Dispatchers.IO).launch {
             var progressDialog: ProgressDialog? = null
 
@@ -104,7 +111,14 @@ class NetworkManager {
             }
         }
     }
-    fun sendPacketToServer2(packetData: ByteArray, packetViewModel: PacketViewModel, requireContext: () -> Context, callback: (ByteArray?) -> Unit) {
+
+    //streaming
+    fun sendPacketToServer2(
+        packetData: ByteArray,
+        packetViewModel: PacketViewModel,
+        requireContext: () -> Context,
+        callback: (ByteArray?) -> Unit
+    ) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 setTCPServerSocket()
@@ -135,8 +149,11 @@ class NetworkManager {
 
 
 
-    fun close() {
-        clientSocket.close()
-        serverSocket.close()
-    }
-}
+
+
+            fun close() {
+                clientSocket.close()
+                serverSocket.close()
+            }
+        }
+
