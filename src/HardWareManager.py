@@ -77,46 +77,26 @@ class cHardWareManager :
             self.pwmObj.stop()
     '''
     @기능
-        Speaker & buzzer 를  일정시간 동안  번갈아 가며 울린다.
+        알람모드에 따라 스피커,부저 를 선택하여 GPIO제어를 통해 제어한다.
     @인자
-        -time :  전체 동작 시간
-        -interval : 각각의 기기가 울리는 시간, speaker와 buzzer 모두 같다.'''
-    # def RingBuzzerAndSpeaker(self, times :  int, interval : int) :
-    #     self.pwmObj.start(50.0)
-    #     if __debug__:
-    #         print("both")
-    #     for i in range(0, int(times/2*interval) ) :
-    #         GPIO.output(self.__buzzer, False)
-    #         GPIO.output(self.__speaker,True)
-    #         self.pwmObj.ChangeFrequency(200)
-    #         time.sleep(interval)
-    #         GPIO.output(self.__buzzer, False)
-    #         GPIO.output(self.__speaker,True)
-    #         self.pwmObj.ChangeFrequency(200)
-    #         time.sleep(interval)
-            
-    #     self.pwmObj.stop()
-    '''
-    @기능
-        bitmask AlarmMode에 따라 스피커와 부저 제어
-    @인자
-        -alarmMode : 비트마스킹 알람 모드, ([스피커][부저])
-        -action : 알람이 여부 '''
+        - alarmMode : 비트 마스크로 표현된 알람 모드, 제어할 하드웨어를 선택하는데 사용된다. 현재는 1,2 만 존재한다 (1:진동 2: 스피커)
+        - action : 하드웨어를 제어할 동작, (True :켜기 False : 끄기)'''
     def RingFromMode(self, alarmMode : int, action : bool) :
         print("alarmMode : ", alarmMode)
         if(alarmMode == self.__modeBuzzer):
             self.RingBuzzer(action)
         elif(alarmMode == self.__modeSpeaker):
             self.RingSpeaker(action)
-        #elif(alarmMode == self.__modeBoth):
         else:
             print("wrong Mode!")
-        
+    '''
+    @기능
+        하드웨어 매니저에 등록된 모든 제어기기를 초기 상태로 되돌린다. (끄기)'''
     def resetAll(self):
         for i in self.__outPins:
             GPIO.setup(i, GPIO.OUT,initial=False)
         self.pwmObj.stop()
-
+#test
 if __name__ == "__main__":
     hw = cHardWareManager()
 

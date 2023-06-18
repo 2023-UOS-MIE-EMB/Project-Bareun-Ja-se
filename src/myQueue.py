@@ -7,8 +7,7 @@ import time
 @ 생성자
     기본생성자 인자없음
 @ 주의사항
-    저장 메모리인 Q에 직접 접근 불가
-'''
+    저장 메모리인 Q에 직접 접근 불가'''
 class cQueue:
     __queue = None
 

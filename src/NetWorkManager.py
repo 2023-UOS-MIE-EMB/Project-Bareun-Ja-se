@@ -23,8 +23,7 @@ class cNetWorkManager():
     __ClientSocket  : socket.socket = socket.socket()
     __ClientAddr = None
 
-    __host = "192.168.0.4" #loopback
-    # __host = "127.0.0.1" #loopback
+    __host = "192.168.0.4" #host_ip
 
     __port = 7777
 
@@ -38,11 +37,16 @@ class cNetWorkManager():
     def __del__(self):
         self.Close()
         return
-
+    '''
+    @기능 
+        사전에 미리 지정해 놓은 RPI hotspot을 켠다.'''
     def TurnOnHotSpot(self):
         os.system("sudo nmcli con down id '" + self.__Hssid + "'")  
         time.sleep(2)
 
+    '''
+    @기능 
+        와이파이 이름과 비밀번호를 통해 와이파이에 접속한다..'''
     def SetGeneralWiFi(self,ssid : str, passwd : str) -> bool :
         self.__ssid = ssid
         self.__passwd = passwd
@@ -57,12 +61,17 @@ class cNetWorkManager():
            return True
 
         return False
-
+    '''
+    @기능 
+        TCP서버의 리스팅 소켓을 생성 하고 바인드 한다.'''
     def SetTCPServerSocket(self):
         self.__ServerSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.__ServerSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.__ServerSocket.bind(self.__ServerAddr)
 
+    '''
+    @기능 
+       현재 서버와 연결한 클라이언트의 주소를 얻는다'''
     def GetCurrentClient(self) -> str:
         return self.__ClientAddr
 
@@ -82,7 +91,9 @@ class cNetWorkManager():
     
     def SendAll(self, buf : str):
         self.__ClientSocket.sendall(buf)
-
+    '''
+    @기능 
+       현재 서버의 주소를 얻는다. 주석을 해제하면 인터넷 연결이 되는 네트워크라면 자동으로 주소를 받아올 수 있다.'''
     def GethostIP(self) -> str:
         #s= socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
         #s.connect(("8.8.8.8",80))
@@ -95,7 +106,7 @@ class cNetWorkManager():
         self.__ClientSocket.close()
 
 
-
+#테스트 코드#
 if __name__ == '__main__':
         network =  cNetWorkManager()
 

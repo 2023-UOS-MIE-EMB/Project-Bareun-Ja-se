@@ -19,7 +19,7 @@ gMAXBUF = 512
 #global_motor
 gpMotor = Process()
 gcMotorRequestQ = cQueue()      
-gCurrentStage = Value('i',1)                    #base value,
+gCurrentStage = Value('i',1)     #base value,
 
 #global_detection
 gpApp : Flask = Flask(__name__)
@@ -28,6 +28,7 @@ gpDetection = Process()
 gBaseStreamAddr = "UnvaluableAddr"
 gStreamingAddr = gBaseStreamAddr
 
+#global_
 @gpApp.route('/vid')
 def vid():
     global gFace_detector
@@ -48,7 +49,7 @@ def ReapingResources():
 
     if(gpMotor.is_alive() ==  False):
         gcMotorRequestQ.Clean() #reset
-        gcMotorRequestQ.Push(1) #초기단계로 모터 되돌리기 -> 현재각도값 저장대신 이게 나을지도? 종료될때 최대한 접히는게 보관도 용이할듯
+        gcMotorRequestQ.Push(1) #초기단계로 모터 되돌리기 
         gpMotor = Process(target=Motor.CallingMotor, args=( gcMotorRequestQ,gCurrentStage))
         gpMotor.start()
         gpMotor.join()
@@ -69,16 +70,19 @@ def ShutingDown():
     ReapingResources()
     os.system("shutdown now")
 
-    #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
-
+    #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   <git token until ~6/22>
 
 if __name__ == '__main__':
 
     gNetWorkManager.SetTCPServerSocket()
     gNetWorkManager.Listen()
-    
+
+    if __debug__ : 
+        print("Now, Listening")
+
     while(1): 
         
+        #timeout되면, 높이 조절 요청 처리
         if not (gNetWorkManager.Accept()):
             if not (gcMotorRequestQ.IsEmpty()):
                 if( gpMotor.is_alive()  == False) : 
@@ -88,8 +92,8 @@ if __name__ == '__main__':
 
             continue  
 
+        #packet recv and parsing
         recvedPacket = gNetWorkManager.Recv()
-
         packetResults = gPacketManager.ParsingPacket(recvedPacket)
 
         if( packetResults == None):
@@ -98,12 +102,13 @@ if __name__ == '__main__':
         targetStage = int(packetResults["0"])
         strmRequest = int(packetResults["1"])
         print(strmRequest)
-        alarmTime = int(packetResults["3"]) #* 60  #min to sec
+        alarmTime = int(packetResults["3"]) # *60  #for test, alarming unit is second
         alarmMode = int(packetResults["4"])
         isShutdown = int(packetResults["2"])
         
-        for key,value in packetResults.items():
-            print(key,":", value)
+        if __debug__ : 
+            for key,value in packetResults.items():
+                print(key,":", value)
 
     #power controll
         if(isShutdown):
@@ -115,15 +120,10 @@ if __name__ == '__main__':
             print("nowQ: ")
             gcMotorRequestQ.PrintAll()
             
-            #<Testing>
-            # for i in range(20):
-            #     #gcMotorRequestQ.Push(i)
-            #     gcMotorRequestQ.Push(random.randint(5,30))
-            
             if( gpMotor.is_alive()  == False) : 
                 gpMotor = Process(target=Motor.CallingMotor, args=( gcMotorRequestQ,gCurrentStage))
                 gpMotor.start()
-                gcMotorRequestQ.Clean() #reset
+                gcMotorRequestQ.Clean() #clear Queue
                 
     #strmRequest
         if( strmRequest == True):
@@ -163,8 +163,5 @@ if __name__ == '__main__':
         if __debug__ :
             print("senddata: " ,packet)
         gNetWorkManager.SendAll(packet)
-
-        time.sleep(1)
-
  ####
 

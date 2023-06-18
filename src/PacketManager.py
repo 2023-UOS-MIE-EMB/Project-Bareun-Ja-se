@@ -95,7 +95,6 @@ class cPacketManager:
 
   
 '''test code '''
-
 if __name__ == '__main__':
     packetManager = cPacketManager()
 

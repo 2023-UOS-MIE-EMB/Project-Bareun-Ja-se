@@ -36,7 +36,11 @@ class __cMotorManager() :
         for i in self.__outPins:
             GPIO.cleanup(i)
         return
-
+    '''
+    @기능
+        모터를 cycles 스텝만큼 회전시키는 함수. cycle의 부호에 따라 회전 방향이 정해진다.
+    @인자
+        -cycles : 회전 스텝 수, 양수면 시계방향, 음수면 그 반대이다.'''
     def RotatingMotor(self, cycles : int): 
         print("rotating:",cycles)  
         if( cycles < 0 ) :
@@ -72,7 +76,7 @@ def CalculatingTime(target : int , current : int ) -> int :
     -requestQ  :  목표 단계 요청이 담긴 Queue, 공유 메모리 공간으로서의 Queue가 아니다.
     
 @OUT
-    -currentStage : 모터의 현재단계. 다른 프로세스와 공유가능한 값이다. 요청 처리 후 바뀐다.'''
+    -currentStage : 모터의 현재단계. 다른 프로세스와 공유가능한 값이다. 마지막 요청 처리 후 바뀐다.'''
 def CallingMotor(requestQ : cQueue , currentStage : Value ):
 
     minStage = 1
@@ -89,20 +93,20 @@ def CallingMotor(requestQ : cQueue , currentStage : Value ):
             continue
         nowTarget = min(nowTarget,maxStage) 
         
-        #</Testing
         if __debug__ :
             requestQ.PrintAll()
             print( " child : " , nowTarget)
-        #/>
+
         cycles = CalculatingTime(nowTarget, tmpCurrentStage)
 
         motor.RotatingMotor(cycles)
         tmpCurrentStage = nowTarget
     del(motor)
-    currentStage.value =  tmpCurrentStage #save
+    currentStage.value =  tmpCurrentStage #save to shared Memory
     print("ChildDead, CurrentStage :", currentStage.value)
     return
 
+#test
 if __name__ == '__main__':
     mm = __cMotorManager()
     mm.RotatingMotor(1000)

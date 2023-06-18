@@ -32,7 +32,7 @@ class cFaceDetector:
     Camera = None
 
     def __init__(self, camera_port=0, frame_width=320, frame_height=240, 
-                alarm_time=5,alarm_mode=0):
+                alarm_time=5, alarm_mode = 0):
 
         self.__FaceDetectModel = dlib.get_frontal_face_detector()
 
@@ -58,7 +58,11 @@ class cFaceDetector:
         SleepingTime = int(self.__AlarmTime/5)
         
         return WorkingTime, 0
-    
+    '''
+    @기능
+        스트리밍 없이 얼굴인식으로 비집중 시간을 감지하고, 알람을 울린다.
+        알람 시간 이상 얼굴이 인식되지 않으면, 알람 모드에 따라 알람을 울린다.
+        Sleeping Time을 통해 일정 기간 휴식을 취할 수도 있으나 현재는 불필요하여 막아둔 상태이다.'''
     def dectecing_face_alarm(self):
         print("time:", self.__AlarmTime)
         self.__HardWareManager.resetAll()
@@ -73,10 +77,7 @@ class cFaceDetector:
         userState = 1 #Awake
         nowState = 1
         RecentTime = StartWorkingTime = time.time() # WorkingTime 계산을 위한 시작 시간
-        WorkingTime, SleepingTime = self.__SetExTimers()
-        #<\test>
-        # WorkingTime = 30
-        # SleepingTime = 0
+        WorkingTime, SleepingTime = self.__SetExTimers() #Sleeping TIme does not needed
         while(True):
             nowTime =  time.time()
             if((nowTime - StartWorkingTime) >= WorkingTime) :
@@ -84,14 +85,12 @@ class cFaceDetector:
                     print("sleeping")
                 StartWorkingTime = time.time()
                 continue
-                # self.__HardWareManager.resetAll()
-                # time.sleep(SleepingTime)
-                # StartWorkingTime = time.time()
+
             else:    
                 if((nowTime - RecentTime) > self.__AlarmTime and userState == 0):
-                    #ring bell
+                    #ring alarm
                     if __debug__:
-                        print("ring bell")
+                        print("ring alarm!")
                     self.__HardWareManager.RingFromMode(self.__AlarmMode,True)
                     userState = 1
                 else:
@@ -102,7 +101,7 @@ class cFaceDetector:
                     GrayFrame = cv2.equalizeHist(GrayFrame)            
                     faces = self.__FaceDetectModel(GrayFrame)
                     if len(faces) == 0:
-                        #Undetected Face
+                        #can't detect any Face
                         check_Sleep = max(check_Sleep-1,-count_threshold)
                         if __debug__ : 
                             print(check_Sleep)
@@ -127,10 +126,10 @@ class cFaceDetector:
                     if(userState != nowState):
                         userState = nowState   #state 판단 내리고 바뀔때만 초기화
                         RecentTime = time.time()
-                    #if __debug__ : 
-                        #cv2.imshow("face",FrameForFaceDetect)
         del(Camera)
-
+    '''
+    @기능
+        얼굴 인식이 동작되는 영상을 Flask 프레임워크를 이용해 송출한다.'''
     def detecting_face_for_streaming(self):
         print("time:", self.__AlarmTime)
         self.__HardWareManager.resetAll()
@@ -152,6 +151,7 @@ class cFaceDetector:
                 self.__StatusColor = (0, 0, 255)
                 cv2.putText(RawFrame, UserStatus , (10,30), cv2.FONT_HERSHEY_DUPLEX, 1, self.__StatusColor, 2)
             else:
+                # draw rectangle on Faces
                 for face in faces: 
                     x = face.left()
                     y = face.top()
@@ -162,19 +162,14 @@ class cFaceDetector:
                 UserStatus = 'Detected'
                 self.__StatusColor = (0, 255, 0)
                 cv2.putText(RawFrame, UserStatus , (10,30), cv2.FONT_HERSHEY_DUPLEX, 1, self.__StatusColor, 2)
-
+            #streaming Video via 'Mjpeg over HTTP'
             _, buffer = cv2.imencode('.jpg', RawFrame)
             frame = buffer.tostring()
             yield (b'--frame\r\n'
                 b'Content-Type: text/plain\r\n\r\n' + frame + b'\r\n')
         del(Camera)
 
-#todo:
-'''
-system 구상도 그리기
-
-'''
-
+#test#
 if __name__ == '__main__':
     s= socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
     s.connect(("8.8.8.8",80))
