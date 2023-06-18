@@ -36,7 +36,7 @@ class Streaming(private val webView: WebView, private val progressBar: ProgressB
         }
     }
 
-    private fun extractStreamingAddress(jsonData: String): String {
+    fun extractStreamingAddress(jsonData: String): String {
         val jsonObject = JSONObject(jsonData)
         return jsonObject.optString("5")
     }
