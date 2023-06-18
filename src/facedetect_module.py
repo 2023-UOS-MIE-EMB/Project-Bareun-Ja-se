@@ -14,6 +14,7 @@ from HardWareManager import cHardWareManager
     - camera_port : 사용하고자 하는 카메라의 포트 번호. 카메라를 열기 위한 값이다.
     - frame_width, frame_height : 캡쳐할 프레임의 가로와 세로 크기. 웹캠에서 읽어올 이미지의 크기를 설정하기 위한 값이다.
     - alarm_time : 얼굴이 없는 경우에 알람을 발생시키는 시간 (초). 이 값은 working_time보다 클 수 없다.
+    - alram_mode :  기본 알람 모드, 비트마스크 값이며 현재 1,2 만 가능.
 @주의사항
     alarm_time은 working_time보다 클 수 없다. sleeping_time 동안에는 얼굴 감지가 중지된다.'''
 class cFaceDetector:
