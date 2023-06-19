@@ -23,7 +23,6 @@ University of Seoul, Mechanical Information Engineering, Embeded System Final Pr
 | 서울시립대 | 기계정보공학과 | 20184300** | 김*현 | 클라이언트 | 
 | 서울시립대 | 기계정보공학과 | 20184300** | 권*표 | 클라이언트 | 
 
-<img src="https://github.com/2023-UOS-MIE-EMB/Project-Bareun-Ja-se/assets/83463280/e2c7619a-f202-4725-a778-65f0a5774f90" alt="단체사진" width="450px"><br>
 --------------------------
 서버 & 클라이언트 설계 설명 링크:arrow_lower_left:<br>
 :computer: [RaspberryPi Server](#4-서버raspberrypi-설계-및-구현) <br>
