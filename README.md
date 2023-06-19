@@ -22,7 +22,7 @@ University of Seoul, Mechanical Information Engineering, Embeded System Final Pr
 <img src="https://github.com/2023-UOS-MIE-EMB/Project-Bareun-Ja-se/assets/83463280/e2c7619a-f202-4725-a778-65f0a5774f90" alt="단체사진" width="450px"><br>
 --------------------------
 서버 & 클라이언트 설계 설명 링크:arrow_lower_left:<br>
-:computer: [RaspberryPi Server](4.-서버(RaspiberryPi)-설계-및-구현)<br>
+:computer: [RaspberryPi Server]((#4-서버-설계-및-구현))<br> 
 &nbsp;:iphone:   [Android App Client](https://github.com/2023-UOS-MIE-EMB/Project-Bareun-Ja-se/blob/APP_Client/README.md)
 
 --------------------------
@@ -71,7 +71,3 @@ University of Seoul, Mechanical Information Engineering, Embeded System Final Pr
 ## 	4.6 전원 제어
 ![image](https://github.com/2023-UOS-MIE-EMB/Project-Bareun-Ja-se/assets/83463280/68acda19-b587-4f55-962c-03970bf44f5e)<br>
  자원 회수 이후 OS의 종료기능을 이용하여 라즈베리 파이를 종료시킨다. 처음으로 소켓을 모두 닫는다. 이후 모터 제어를 통해 기기 상태를 초기화 한다. 이후 초기화가 끝나면 프로세스를 차례로 종료 시킨 후, Process 객체를 반환한다. 이후 공유 메모리 공간을 반환한다. 자원회수가 끝난 후에는 OS 명령어를 이용해 라즈베리파이를 종료시킨다. 따라서 라즈베리파이가 아닌 독립적으로 전력을 공급받는 모터와 모터 드라이버는 종료하지 못한다는 문제점이 있다.
-
- 
-#실습 동영상
- 
