@@ -13,10 +13,7 @@ import androidx.fragment.app.Fragment
 import com.example.project.Profile
 import com.example.project.databinding.FragmentHeightcontrollerBinding
 import androidx.lifecycle.ViewModelProvider
-import com.example.project.FirstLaunch
 import com.example.project.PacketViewModel
-import com.example.project.SharedData
-import com.example.project.ui.addprofile.AddProfileFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -24,6 +21,7 @@ import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.io.IOException
 
+// 기능 : 높이 제어 기능을 담당하며, 사용자가 현재 단계를 입력하고 제어하는 기능을 제공하는 프래그먼트
 class HeightControllerFragment : Fragment() {
 
     private lateinit var packetViewModel: PacketViewModel
@@ -38,7 +36,8 @@ class HeightControllerFragment : Fragment() {
             updateNowStepText(currentStep)
         }
 
-
+    // 기능 : 프래그먼트의 뷰를 생성하고 초기화하는 메서드. 현 프래그먼트로 이동할 시 패킷을 보낸 뒤 받은 응답 패킷의 인자를 현재각도에 출력
+    // 높이 단계를 입력하는 버튼들의 기능 설정
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -53,28 +52,7 @@ class HeightControllerFragment : Fragment() {
 
         sendPacketToServer3(dataToSend, packetViewModel, requireContext())
 
-//        val sharedPreferences = requireContext().getSharedPreferences(AddProfileFragment.PROFILE_PREFS_KEY, Context.MODE_PRIVATE)
-//        val selectedProfileName = sharedPreferences.getString("selected_profile", null)
-//        if (selectedProfileName != null) {
-//            val profileJson = sharedPreferences.getString(selectedProfileName, null)
-//            if (profileJson != null) {
-//                val selectedProfile = Profile.fromJson(profileJson)
-//                if (SharedData.firstLaunch.heightFirstLaunch && selectedProfile != null) {
-//                    if (selectedProfile.optimalStep != "미설정") {
-//                        currentStep = selectedProfile.optimalStep.toInt()
-//                    }
-//                    else{
-//                        currentStep = 0
-//                    }
-//                    SharedData.firstLaunch.heightFirstLaunch = false
-//                }
-//                updateNowStepText()
-//            }
-//        }
-
-
-
-
+        // 기능 : 단계값을 입력하는 버튼
         binding.stepInputButton.setOnClickListener {
             val inputText = binding.stepEdittext.text.toString()
             if (inputText.isNotEmpty()) {
@@ -100,6 +78,7 @@ class HeightControllerFragment : Fragment() {
             }
         }
 
+        // 기능 : 단계값을 1단계 높이는 버튼
         binding.stepUpButton.setOnClickListener {
             if (currentStep < 20) {
                 currentStep++
@@ -117,7 +96,7 @@ class HeightControllerFragment : Fragment() {
                 }
             }
         }
-
+        // 기능 : 단계값을 1단계 내리는 버튼
         binding.stepDownButton.setOnClickListener {
             if (currentStep > 1) {
                 currentStep--
@@ -135,7 +114,7 @@ class HeightControllerFragment : Fragment() {
                 }
             }
         }
-
+        // 기능 : 현재 각도를 프로필의 최적각도 인자에 저장하는 버튼
         binding.saveButton.setOnClickListener {
             val selectedProfileName = packetViewModel.getSelectedProfileName(requireContext())
             if (selectedProfileName != null) {
@@ -152,11 +131,6 @@ class HeightControllerFragment : Fragment() {
             }
         }
 
-//        if (savedInstanceState != null) {
-//            currentStep = savedInstanceState.getInt("currentStep", 0)
-//            updateNowStepText()
-//        }
-
         return binding.root
     }
 
@@ -169,7 +143,7 @@ class HeightControllerFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
-
+    // 기능 : 서버에 연결하고 패킷 데이터를 전송한 후, 응답을 받아 현재 단계를 추출하여 업데이트하는 메서드
     private fun sendPacketToServer3(
         packetData: ByteArray,
         packetViewModel: PacketViewModel,
@@ -222,7 +196,7 @@ class HeightControllerFragment : Fragment() {
             }
         }
     }
-
+    // 기능 : 서버에서 받은 응답 패킷에서 현재 단계 값을 추출하는 메서드
     private fun extractExistingStep(packet: ByteArray): String? {
         val packetString = String(packet, Charsets.UTF_8)
         val lines = packetString.split("\r\n")
@@ -242,7 +216,7 @@ class HeightControllerFragment : Fragment() {
         }
         return null
     }
-
+    // 기능 : 현재 단계 값을 받아와 UI의 "현재 단계" 텍스트를 업데이트하는 메서드
     private fun updateNowStepText(currentStep: Int) {
         binding.nowStep.text = currentStep.toString()
         binding.nowStep.invalidate()

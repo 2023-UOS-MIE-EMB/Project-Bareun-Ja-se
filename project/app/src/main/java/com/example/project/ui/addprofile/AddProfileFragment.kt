@@ -14,12 +14,13 @@ import androidx.navigation.fragment.findNavController
 import com.example.project.R
 import com.example.project.Profile
 
-
+// 기능 : 프로필을 추가하는 기능을 제공하는 프래그먼트
 class AddProfileFragment : Fragment() {
 
     private var selectedAlarmMode: String? = null
     private var isAlarmOn: Boolean = false
 
+    // 기능 : 사용자가 프로필의 이름, 알람 시간, 알람모드를 입력하고 추가할 수 있는 기능을 제공
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -81,8 +82,6 @@ class AddProfileFragment : Fragment() {
                 putString("selected_profile", profile.name)
                 commit()
             }
-
-            val profileJson = profile.toJson()
             findNavController().navigate(R.id.action_addProfileFragment_to_profileListFragement)
 
         }

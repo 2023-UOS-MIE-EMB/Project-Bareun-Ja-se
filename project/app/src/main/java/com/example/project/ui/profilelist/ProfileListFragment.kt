@@ -17,8 +17,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.project.*
 import com.example.project.ui.addprofile.AddProfileFragment.Companion.PROFILE_PREFS_KEY
-import com.example.project.ui.heightcontrolloer.HeightControllerFragment
 
+// 기능 : 프로필 목록을 표시하고 관리하는 프래그먼트
 class ProfileListFragment : Fragment() {
 
     private lateinit var profileRecyclerView: RecyclerView
@@ -26,13 +26,13 @@ class ProfileListFragment : Fragment() {
     private var profileList: List<Profile> = emptyList()
     private val networkManager = NetworkManager()
 
-
+    // 기능 :  프래그먼트의 화면를 생성하고 초기화하는 메서드. 프로필 목록 레이아웃을 할당한 후 해당 레이아웃에서 RecycleView를 할당
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_profilelist, container, false)
         profileRecyclerView = view.findViewById(R.id.profileRecyclerView)
         return view
     }
-
+    // 기능 : 화면이 생성된 후 호출되는 메서드. 프로필 목록을 업데이트하는 adapter 설정
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         profileAdapter = ProfileAdapter()
@@ -43,23 +43,21 @@ class ProfileListFragment : Fragment() {
         updateProfileList()
     }
 
+    // 기능 : 프로필 목록을 가져와서 adapter에 제출 및 갱신
     private fun updateProfileList() {
         profileList = getProfileList(requireContext())
         profileAdapter.submitList(profileList)
     }
 
-    // 프로필 목록 가져오는 함수
+    // 기능 : 프로필 목록 가져오는 함수. SharedPreferences 객체를 이용하여 앱 내부 데이터에 저장된 프로필 정보들을 목록으로 변환
     private fun getProfileList(context: Context): List<Profile> {
-        // SharedPreferences 객체 생성
         val sharedPreferences = context.getSharedPreferences(PROFILE_PREFS_KEY, Context.MODE_PRIVATE)
-        // SharedPreferences에서 저장된 프로필 정보 목록 가져오기
         val profileMap = sharedPreferences.all
-        // 프로필 정보 목록을 Profile 객체 목록으로 변환
         return profileMap.filterKeys { it != "selected_profile" }
             .flatMap { Profile.fromJson(it.value.toString())?.let { listOf(it) } ?: emptyList() }
     }
 
-    // 선택한 프로필 저장하는 함수
+    // 기능 : 선택한 프로필 저장하는 함수
     fun saveSelectedProfile(context: Context, profile: Profile) {
         // SharedPreferences 객체 생성
         val sharedPreferences = context.getSharedPreferences(PROFILE_PREFS_KEY, Context.MODE_PRIVATE)
@@ -70,7 +68,7 @@ class ProfileListFragment : Fragment() {
         }
     }
 
-    // 프로필 삭제 함수
+    // 기능 : 프로필 삭제 함수
     private fun deleteProfile(context: Context, name: String) {
         // SharedPreferences 객체 생성
         val sharedPreferences =
@@ -82,6 +80,7 @@ class ProfileListFragment : Fragment() {
         }
     }
 
+    // 기능 : RecyclerView의 어댑터 클래스. 프로필 목룍 표시
     inner class ProfileAdapter : RecyclerView.Adapter<ProfileAdapter.ProfileViewHolder>() {
         private var profileList: List<Profile> = emptyList()
 
@@ -102,7 +101,7 @@ class ProfileListFragment : Fragment() {
             profileList = newProfileList
             notifyDataSetChanged()
         }
-
+        // 기능 : 프로필 정보를 불러오고 선택 버튼과 삭제 버튼에 대한 클릭 이벤트를 처리
         inner class ProfileViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             private val profileNameTextView: TextView = itemView.findViewById(R.id.profileName)
             private val selectButton: Button = itemView.findViewById(R.id.selectProfileButton)
@@ -120,7 +119,6 @@ class ProfileListFragment : Fragment() {
 
                     val packetViewModel = ViewModelProvider(requireActivity()).get(PacketViewModel::class.java)
 
-                    Log.d("sssssssssssssss", SharedData.firstLaunch.heightFirstLaunch.toString())
                     SharedData.firstLaunch.heightFirstLaunch = true
 
                     if (profile.optimalStep != "미설정") {
