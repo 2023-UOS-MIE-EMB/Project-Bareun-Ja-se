@@ -18,7 +18,7 @@ import com.example.project.R
 import com.example.project.databinding.FragmentHomeBinding
 import com.example.project.ui.addprofile.AddProfileFragment.Companion.PROFILE_PREFS_KEY
 
-
+// 기능 : 앱의 홈 화면을 나타내는 프래그먼트
 class HomeFragment : Fragment() {
 
     private lateinit var packetViewModel: PacketViewModel
@@ -32,13 +32,11 @@ class HomeFragment : Fragment() {
     private lateinit var profileTimeTextView: TextView
     private lateinit var profileAlarmTextView: TextView
 
-
+    // 기능 : 프래그먼트의 뷰를 생성하고 초기화하는 메서드
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val view = binding.root
 
-
-        // Initialize the views
         profileNameTextView = view.findViewById(R.id.profile_name)
         profileStepTextView = view.findViewById(R.id.profile_step)
         profileTimeTextView = view.findViewById(R.id.profile_time)
@@ -50,6 +48,8 @@ class HomeFragment : Fragment() {
 
     private var isFirstLaunch = true
 
+    // 기능 : 화면이이 생성된 후 출되는 메서드. 선택된 프로필 정보를 가져와서 해당 프로필의 세부 정보를 표시하고 처음 앱 실행 시 선택된 프로필에 기반하여 패킷을 생성하고 서버에 전송
+    // 프로필이 없는 경우 자동으로 프로필 설정화면으로 이동하도록 설정. 각 버튼에 대한 기능들을 설정
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -67,7 +67,7 @@ class HomeFragment : Fragment() {
                     sendPacketBasedOnSelectedProfile(selectedProfile)
                     isFirstLaunch = false
                 }
-
+            // 기능 : 프로필
             } else {
                 Toast.makeText(requireContext(), "프로필이 없습니다. 프로필을 추가해주세요.", Toast.LENGTH_SHORT).show()
                 findNavController().navigate(R.id.action_homeFragment_to_addProfileFragment)
@@ -104,7 +104,7 @@ class HomeFragment : Fragment() {
 
         }
     }
-
+    // 기능 : 선택된 프로필에 기반하여 패킷을 생성하고 서버에 전송하는 메서드
     fun sendPacketBasedOnSelectedProfile(profile: Profile) {
         if (profile.optimalStep != "미설정") {
             packetViewModel.updateParameter0(profile.optimalStep)
@@ -135,7 +135,7 @@ class HomeFragment : Fragment() {
         }
     }
 
-
+    // 기능 : 프로필의 세부 정보를 화면에 표시하는 함수
     fun showProfileDetails(profile: Profile?) {
         profile?.let {
             profileNameTextView.text = it.name
@@ -145,10 +145,6 @@ class HomeFragment : Fragment() {
         }
     }
 
-//    override fun onResume() {
-//        super.onResume()
-//        connectToRaspberryPiHotspot(requireActivity())
-//    }
 
     override fun onDestroyView() {
         super.onDestroyView()

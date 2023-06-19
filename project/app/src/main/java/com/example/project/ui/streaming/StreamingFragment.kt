@@ -17,7 +17,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.project.PacketViewModel
 
-
+// 기능 : 스트리밍 화면을 표시하고 관리하는 프래그먼트
 class StreamingFragment : Fragment() {
     private lateinit var webView: WebView
     private lateinit var closeButton: Button
@@ -26,6 +26,7 @@ class StreamingFragment : Fragment() {
     private lateinit var progressBar: ProgressBar
     private val networkManager = NetworkManager()
 
+    // 기능 : 프래그먼트의 화면을 생성하고 변수들을 초기화하는 매서드
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -38,6 +39,7 @@ class StreamingFragment : Fragment() {
         progressBar = view.findViewById(R.id.Progressbar)
         streaming = Streaming(webView, progressBar)
 
+        // 기능 : closeButton을 누르는 경우 스트리밍을 중지하고 스트리밍 요청 인자를 0(사용안함)으로 업데이트한 후 해당 값 서버로 패킷 송신
         closeButton.setOnClickListener {
             streaming.stopStreaming()
             packetViewModel.updateParameter1("0")
@@ -56,13 +58,11 @@ class StreamingFragment : Fragment() {
         return view
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    // 기능 : 화면이 생성된 후 호출되는 메서드. 스트리밍을 요청 인자를 1(사용)으로 업데이트 한 후 서버로 패킷 송신. 성공한 경우 받은 응답 패킷으로 스트리밍 시작
+   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         packetViewModel = ViewModelProvider(requireActivity()).get(PacketViewModel::class.java)
-        //val streamingaddress =  "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
-        //streaming.startStreaming2(streamingaddress)
-        //if (packetViewModel.checkIfP3P4Changed() == 1) {
-            // p3 또는 p4 값이 변경되었을 때의 처리
+
         packetViewModel.updateParameter1("1")
         var resultPacket: Pair<Boolean, ByteArray> = packetViewModel.makePacketToSend()
         val isSuccess: Boolean = resultPacket.first
@@ -70,17 +70,6 @@ class StreamingFragment : Fragment() {
 
         Log.d("Packet", "Data: ${packetViewModel.parsingPacket(dataToSend)}")
 
-//            if (isSuccess) {
-//                networkManager.sendPacketToServer2(dataToSend, packetViewModel, { requireContext() }) { responsePacket ->
-//                    requireActivity().runOnUiThread {
-//                        if (responsePacket != null) {
-//                            // responsePacket을 사용하여 원하는 작업 수행
-//                            streaming.parsePacketAndStartStreaming(responsePacket)
-//                        } else {
-//                            // 패킷 전송 실패 처리
-//                        }
-//                    }
-//                }
         if (isSuccess) {
             networkManager.sendPacketToServer2(
                 dataToSend,
@@ -99,7 +88,7 @@ class StreamingFragment : Fragment() {
         }
     }
 
-
+    // 기능 : 창을 닫는 경우 호출되는 메서드. 스트리밍을 중지함
     override fun onDestroyView() {
         super.onDestroyView()
         streaming.stopStreaming()

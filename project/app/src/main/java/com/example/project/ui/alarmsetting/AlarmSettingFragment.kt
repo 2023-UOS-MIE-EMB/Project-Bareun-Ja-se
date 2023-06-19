@@ -18,6 +18,7 @@ import com.example.project.PacketViewModel
 import com.example.project.Profile
 import com.example.project.R
 
+// 기능 : 사용자가 알람을 설정하고 저장할 수 있는 기능을 제공하는 프래그먼트
 class AlarmSettingFragment : Fragment() {
 
     private lateinit var packetViewModel: PacketViewModel
@@ -48,6 +49,7 @@ class AlarmSettingFragment : Fragment() {
         alarmSoundmodeButton.isEnabled = false
         alarmVibemodeButton.isEnabled = false
 
+        // 기능 : 사용자가 알람을 켜거나 끌 수 있는 스위치 제공
         alarmSwitch.setOnCheckedChangeListener { _, isChecked ->
             isAlarmOn = isChecked
             if (isChecked) {
@@ -66,7 +68,7 @@ class AlarmSettingFragment : Fragment() {
         alarmVibemodeButton.setOnClickListener { selectAlarmMode("진동") }     //진동
         alarmSoundmodeButton.setOnClickListener { selectAlarmMode("소리") }    //소리
 
-
+        // 기능 : 알람 설정을 프로필에 저장한 후 패킷을 보내는 버튼
         saveButton.setOnClickListener {
             val sharedPreferences =
                 requireContext().getSharedPreferences(PROFILE_PREFS_KEY, Context.MODE_PRIVATE)
