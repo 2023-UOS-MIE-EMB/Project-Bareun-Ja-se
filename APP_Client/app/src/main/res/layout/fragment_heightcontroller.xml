@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/title_ControlStep"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="높이 조절"
+        android:layout_marginTop="16dp"
+        android:textSize="33sp"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+
+    <TextView
+        android:id="@+id/title_nowStep"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="현재 단계: "
+        android:textColor="@color/black"
+        android:textSize="28sp"
+
+        android:layout_marginEnd="225dp"
+        app:layout_constraintTop_toBottomOf="@id/title_ControlStep"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="40dp"/>
+
+    <TextView
+        android:id="@+id/nowStep"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="현재 단계 값"
+        android:layout_marginEnd="20dp"
+        android:textSize="28sp"
+        app:layout_constraintTop_toBottomOf="@id/title_ControlStep"
+        app:layout_constraintStart_toEndOf="@+id/title_nowStep"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="40dp"/>
+
+
+    <EditText
+        android:id="@+id/stepEdittext"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
+        android:layout_marginEnd="140dp"
+        android:layout_marginStart="30dp"
+        android:hint="단계를 입력하세요. (ex: 1~20)"
+        app:layout_constraintTop_toBottomOf="@id/nowStep"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="40dp"/>
+
+    <Button
+        android:id="@+id/stepInputButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="입력"
+        android:textStyle="bold"
+        android:layout_marginEnd="30dp"
+        android:layout_marginStart="30dp"
+        app:layout_constraintTop_toTopOf="@+id/stepEdittext"
+        app:layout_constraintBottom_toBottomOf="@+id/stepEdittext"
+        app:layout_constraintStart_toEndOf="@+id/stepEdittext"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/stepUpButton"
+        android:layout_width="120dp"
+        android:layout_height="100dp"
+        android:background="@drawable/up"
+        app:layout_constraintTop_toBottomOf="@id/stepInputButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/stepDownButton"
+        android:layout_marginTop="50dp"/>
+
+    <Button
+        android:id="@+id/stepDownButton"
+        android:layout_width="120dp"
+        android:layout_height="100dp"
+        android:background="@drawable/down"
+        app:layout_constraintTop_toBottomOf="@id/stepInputButton"
+        app:layout_constraintStart_toEndOf="@+id/stepUpButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="50dp"/>
+
+
+    <TextView
+        android:id="@+id/saveButtonExplain"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="현재 단계를 프로필의 최적 단계로 설정합니다."
+        android:textColor="@color/purple_500"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@+id/saveButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="10dp"/>
+
+    <Button
+        android:id="@+id/saveButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="38dp"
+        android:layout_marginEnd="30dp"
+        android:text="현재 단계 저장"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/stepDownButton" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
