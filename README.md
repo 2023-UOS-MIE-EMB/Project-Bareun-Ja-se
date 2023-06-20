@@ -26,7 +26,7 @@ University of Seoul, Mechanical Information Engineering, Embeded System Final Pr
 --------------------------
 서버 & 클라이언트 설계 설명 링크:arrow_lower_left:<br>
 :computer: [RaspberryPi Server](#4-서버raspberrypi-설계-및-구현) <br>
-&nbsp;:iphone:   [Android App Client](https://github.com/2023-UOS-MIE-EMB/Project-Bareun-Ja-se/blob/APP_Client/README.md)
+&nbsp;:iphone:   [Android App Client](#5-어플리케이션-기능-설명)
 
 --------------------------
 # 2.	프로젝트 개요
